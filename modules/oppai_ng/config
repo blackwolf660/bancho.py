@@ -1,0 +1,15 @@
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = false
+	logallrefupdates = true
+	worktree = ../../../oppai_ng
+[remote "origin"]
+	url = https://github.com/tsunyoku/oppai_ng
+	fetch = +refs/heads/*:refs/remotes/origin/*
+[branch "master"]
+	remote = origin
+	merge = refs/heads/master
+[submodule "pybind11"]
+	active = true
+	url = https://github.com/pybind/pybind11
