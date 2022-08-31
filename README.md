@@ -10,6 +10,8 @@ of experience interested in hosting their own osu private server instance(s).
 the project is developed primarily by the [osu!Akatsuki](https://akatsuki.pw/) team,
 and our aim is to create the most easily maintainable, reliable, and feature-rich
 osu! server implementation available.
+This fork also contains [OwOuser](https://github.com/divinity1437/bancho.py) changes, to seems more stability
+and functionally, like webhooks, custom changes for privileges and some functions.
 
 # Setup
 knowledge of linux, python, and databases will certainly help, but are by no
