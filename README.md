@@ -27,7 +27,7 @@ different setup processes.
 ## download the osu! server codebase onto your machine
 ```sh
 # clone bancho.py's repository
-git clone https://github.com/osuAkatsuki/bancho.py
+git clone https://github.com/blackwolf660/bancho.py
 
 # enter bancho.py's new directory
 cd bancho.py
