@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """
 This module provides helpers for C++11+ projects using pybind11.
 
@@ -32,12 +30,12 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
-
 # IMPORTANT: If you change this file in the pybind11 repo, also review
 # setup_helpers.pyi for matching changes.
 #
 # If you copy this file in, you don't
 # need the .pyi file; it's just an interface file for static type checkers.
+from __future__ import annotations
 
 import contextlib
 import os
@@ -339,7 +337,7 @@ def intree_extensions(paths, package_dir=None):
             if not found:
                 raise ValueError(
                     "path {} is not a child of any of the directories listed "
-                    "in 'package_dir' ({})".format(path, package_dir)
+                    "in 'package_dir' ({})".format(path, package_dir),
                 )
     return exts
 
@@ -366,7 +364,7 @@ def no_recompile(obg, src):
 # and: https://github.com/tbenthompson/cppimport/blob/stable/cppimport/build_module.py
 # and NumPy's parallel distutils module:
 #              https://github.com/numpy/numpy/blob/master/numpy/distutils/ccompiler.py
-class ParallelCompile(object):
+class ParallelCompile:
     """
     Make a parallel compile function. Inspired by
     numpy.distutils.ccompiler.CCompiler_compile and cppimport.
@@ -430,7 +428,7 @@ class ParallelCompile(object):
 
             # These lines are directly from distutils.ccompiler.CCompiler
             macros, objects, extra_postargs, pp_opts, build = compiler._setup_compile(
-                output_dir, macros, include_dirs, sources, depends, extra_postargs
+                output_dir, macros, include_dirs, sources, depends, extra_postargs,
             )
             cc_args = compiler._get_cc_args(pp_opts, debug, extra_preargs)
 

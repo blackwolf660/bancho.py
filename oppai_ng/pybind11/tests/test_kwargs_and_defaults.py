@@ -1,7 +1,7 @@
-# -*- coding: utf-8 -*-
-import pytest
+from __future__ import annotations
 
 import env  # noqa: F401
+import pytest
 from pybind11_tests import kwargs_and_defaults as m
 
 
@@ -46,7 +46,7 @@ def test_named_arguments(msg):
         m.kw_func2(x=5, y=10, z=12)
     assert excinfo.match(
         r"(?s)^kw_func2\(\): incompatible.*Invoked with: kwargs: ((x=5|y=10|z=12)(, |$))"
-        + "{3}$"
+        + "{3}$",
     )
 
     assert m.kw_func4() == "{13 17}"

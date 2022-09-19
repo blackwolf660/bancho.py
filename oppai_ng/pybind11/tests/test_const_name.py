@@ -1,7 +1,7 @@
-# -*- coding: utf-8 -*-
-import pytest
+from __future__ import annotations
 
 import env
+import pytest
 from pybind11_tests import const_name as m
 
 
@@ -21,11 +21,11 @@ from pybind11_tests import const_name as m
             "D1",
             "E2",
             "KeepAtEnd",
-        )
+        ),
     ),
 )
 def test_const_name(func, selector, expected):
-    if isinstance(func, type(u"") if env.PY2 else str):
+    if isinstance(func, str if env.PY2 else str):
         pytest.skip(func)
     text = func(selector)
     assert text == expected

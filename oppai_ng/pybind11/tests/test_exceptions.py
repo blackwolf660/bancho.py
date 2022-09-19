@@ -1,10 +1,10 @@
-# -*- coding: utf-8 -*-
-import sys
+from __future__ import annotations
 
-import pytest
+import sys
 
 import env
 import pybind11_cross_module_tests as cm
+import pytest
 from pybind11_tests import exceptions as m
 
 
@@ -91,7 +91,7 @@ def test_python_call_in_catch():
 def ignore_pytest_unraisable_warning(f):
     unraisable = "PytestUnraisableExceptionWarning"
     if hasattr(pytest, unraisable):  # Python >= 3.8 and pytest >= 6
-        dec = pytest.mark.filterwarnings("ignore::pytest.{}".format(unraisable))
+        dec = pytest.mark.filterwarnings(f"ignore::pytest.{unraisable}")
         return dec(f)
     else:
         return f
@@ -241,7 +241,7 @@ def test_nested_throws(capture):
 
 # This can often happen if you wrap a pybind11 class in a Python wrapper
 def test_invalid_repr():
-    class MyRepr(object):
+    class MyRepr:
         def __repr__(self):
             raise AttributeError("Example error")
 

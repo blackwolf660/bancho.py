@@ -1,7 +1,6 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 # Setup script for PyPI; use CMakeFile.txt to build extension modules
+from __future__ import annotations
 
 import contextlib
 import io
@@ -17,7 +16,7 @@ import setuptools.command.sdist
 
 DIR = os.path.abspath(os.path.dirname(__file__))
 VERSION_REGEX = re.compile(
-    r"^\s*#\s*define\s+PYBIND11_VERSION_([A-Z]+)\s+(.*)$", re.MULTILINE
+    r"^\s*#\s*define\s+PYBIND11_VERSION_([A-Z]+)\s+(.*)$", re.MULTILINE,
 )
 
 
@@ -43,10 +42,10 @@ def build_expected_version_hex(matches):
     except ValueError:
         pass
     if serial is None:
-        msg = 'Invalid PYBIND11_VERSION_PATCH: "{}"'.format(patch_level_serial)
+        msg = f'Invalid PYBIND11_VERSION_PATCH: "{patch_level_serial}"'
         raise RuntimeError(msg)
     return "0x{:02x}{:02x}{:02x}{}{:x}".format(
-        major, minor, patch, level[:1].upper(), serial
+        major, minor, patch, level[:1].upper(), serial,
     )
 
 
@@ -71,12 +70,12 @@ exec(code, loc)
 version = loc["__version__"]
 
 # Verify that the version matches the one in C++
-with io.open("include/pybind11/detail/common.h", encoding="utf8") as f:
+with open("include/pybind11/detail/common.h", encoding="utf8") as f:
     matches = dict(VERSION_REGEX.findall(f.read()))
 cpp_version = "{MAJOR}.{MINOR}.{PATCH}".format(**matches)
 if version != cpp_version:
     msg = "Python version {} does not match C++ version {}!".format(
-        version, cpp_version
+        version, cpp_version,
     )
     raise RuntimeError(msg)
 

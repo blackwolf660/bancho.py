@@ -1,7 +1,7 @@
-# -*- coding: utf-8 -*-
-import pytest
+from __future__ import annotations
 
 import env  # noqa: F401
+import pytest
 from pybind11_tests import numpy_array as m
 
 np = pytest.importorskip("numpy")
@@ -20,8 +20,8 @@ def test_dtypes():
         if check.numpy.num != check.pybind11.num:
             print(
                 "NOTE: typenum mismatch for {}: {} != {}".format(
-                    check, check.numpy.num, check.pybind11.num
-                )
+                    check, check.numpy.num, check.pybind11.num,
+                ),
             )
 
 
@@ -70,7 +70,7 @@ def test_array_attributes():
 
 
 @pytest.mark.parametrize(
-    "args, ret", [([], 0), ([0], 0), ([1], 3), ([0, 1], 1), ([1, 2], 5)]
+    "args, ret", [([], 0), ([0], 0), ([1], 3), ([0, 1], 1), ([1, 2], 5)],
 )
 def test_index_offset(arr, args, ret):
     assert m.index_at(arr, *args) == ret
@@ -118,7 +118,7 @@ def test_at_fail(arr, dim):
         with pytest.raises(IndexError) as excinfo:
             func(arr, *([0] * dim))
         assert str(excinfo.value) == "index dimension mismatch: {} (ndim = 2)".format(
-            dim
+            dim,
         )
 
 
@@ -538,7 +538,7 @@ def test_format_descriptors_for_floating_point_types(test_func):
 @pytest.mark.parametrize("contiguity", [None, "C", "F"])
 @pytest.mark.parametrize("noconvert", [False, True])
 @pytest.mark.filterwarnings(
-    "ignore:Casting complex values to real discards the imaginary part:numpy.ComplexWarning"
+    "ignore:Casting complex values to real discards the imaginary part:numpy.ComplexWarning",
 )
 def test_argument_conversions(forcecast, contiguity, noconvert):
     function_name = "accept_double"
@@ -576,7 +576,7 @@ def test_argument_conversions(forcecast, contiguity, noconvert):
                     function(array)
                 else:
                     with pytest.raises(
-                        TypeError, match="incompatible function arguments"
+                        TypeError, match="incompatible function arguments",
                     ):
                         function(array)
 

@@ -1,10 +1,10 @@
-# -*- coding: utf-8 -*-
+from __future__ import annotations
+
 import time
 from threading import Thread
 
-import pytest
-
 import env  # noqa: F401
+import pytest
 from pybind11_tests import callbacks as m
 
 
@@ -18,7 +18,7 @@ def test_callbacks():
         return "func2", a, b, c, d
 
     def func3(a):
-        return "func3({})".format(a)
+        return f"func3({a})"
 
     assert m.test_callback1(func1) == "func1"
     assert m.test_callback2(func2) == ("func2", "Hello", "x", True, 5)
@@ -190,13 +190,13 @@ def test_callback_num_times():
             print()
         print(
             "callback_num_times: {:d} million / {:.3f} seconds = {:.3f} million / second".format(
-                num_millions, td, rate
-            )
+                num_millions, td, rate,
+            ),
         )
     if len(rates) > 1:
         print("Min    Mean   Max")
         print(
             "{:6.3f} {:6.3f} {:6.3f}".format(
-                min(rates), sum(rates) / len(rates), max(rates)
-            )
+                min(rates), sum(rates) / len(rates), max(rates),
+            ),
         )

@@ -1,8 +1,9 @@
-# -*- coding: utf-8 -*-
-import pytest
+from __future__ import annotations
 
-from pybind11_tests import ConstructorStats, UserType
+import pytest
+from pybind11_tests import ConstructorStats
 from pybind11_tests import stl as m
+from pybind11_tests import UserType
 
 
 def test_vector(doc):
@@ -138,7 +139,7 @@ def test_optional():
 
 
 @pytest.mark.skipif(
-    not hasattr(m, "has_exp_optional"), reason="no <experimental/optional>"
+    not hasattr(m, "has_exp_optional"), reason="no <experimental/optional>",
 )
 def test_exp_optional():
     assert m.double_or_zero_exp(None) == 0

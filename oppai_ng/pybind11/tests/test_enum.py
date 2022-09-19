@@ -1,7 +1,7 @@
-# -*- coding: utf-8 -*-
-import pytest
+from __future__ import annotations
 
 import env
+import pytest
 from pybind11_tests import enums as m
 
 
@@ -61,7 +61,7 @@ Members:
   ETwo : Docstring for ETwo
 
   EThree : Docstring for EThree""".split(
-        "\n"
+        "\n",
     ):
         assert docstring_line in m.UnscopedEnum.__doc__
 

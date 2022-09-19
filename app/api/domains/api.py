@@ -176,21 +176,28 @@ async def api_get_player_info(
     # fetch user's info if requested
     if scope in ("info", "all"):
 
-
         api_data["info"] = dict(user_info)
 
-       
-       
         clan_id = user_info["clan_id"]
-        clan_info = await app.state.services.database.fetch_one("SELECT * FROM clans WHERE id = :clan_id",{"clan_id":clan_id})
+        clan_info = await app.state.services.database.fetch_one(
+            "SELECT * FROM clans WHERE id = :clan_id", {"clan_id": clan_id},
+        )
 
         if clan_info is not None:
 
-            clan_members = await app.state.services.database.fetch_one("SELECT count(*) FROM users WHERE users.clan_id = :clan_id",{"clan_id":clan_id})
+            clan_members = await app.state.services.database.fetch_one(
+                "SELECT count(*) FROM users WHERE users.clan_id = :clan_id",
+                {"clan_id": clan_id},
+            )
             clan_info_id = clan_info[0]
             clan_info_name = clan_info[1]
             clan_info_tag = clan_info[2]
-            api_data["info"]["clan"] = {"id":clan_info_id,"name":clan_info_name,"tag": clan_info_tag,"members":clan_members[0]}
+            api_data["info"]["clan"] = {
+                "id": clan_info_id,
+                "name": clan_info_name,
+                "tag": clan_info_tag,
+                "members": clan_members[0],
+            }
 
     # fetch user's stats if requested
     if scope in ("stats", "all"):
@@ -959,6 +966,7 @@ async def api_get_pool(
             },
         },
     )
+
 
 def requires_authorization(
     param_function: Callable[..., Any],

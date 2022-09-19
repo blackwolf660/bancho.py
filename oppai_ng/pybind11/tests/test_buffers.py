@@ -1,13 +1,13 @@
-# -*- coding: utf-8 -*-
+from __future__ import annotations
+
 import ctypes
 import io
 import struct
 
-import pytest
-
 import env
-from pybind11_tests import ConstructorStats
+import pytest
 from pybind11_tests import buffers as m
+from pybind11_tests import ConstructorStats
 
 np = pytest.importorskip("numpy")
 
@@ -38,7 +38,7 @@ def test_from_python():
 # https://foss.heptapod.net/pypy/pypy/-/issues/2444
 # TODO: fix on recent PyPy
 @pytest.mark.xfail(
-    env.PYPY, reason="PyPy 7.3.7 doesn't clear this anymore", strict=False
+    env.PYPY, reason="PyPy 7.3.7 doesn't clear this anymore", strict=False,
 )
 def test_to_python():
     mat = m.Matrix(5, 4)
@@ -146,7 +146,7 @@ def test_ctypes_array_2d():
 
 
 @pytest.mark.skipif(
-    "env.PYPY and env.PY2", reason="PyPy2 bytes buffer not reported as readonly"
+    "env.PYPY and env.PY2", reason="PyPy2 bytes buffer not reported as readonly",
 )
 def test_ctypes_from_buffer():
     test_pystr = b"0123456789"

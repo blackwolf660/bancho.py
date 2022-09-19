@@ -1,4 +1,4 @@
-# pack-refs with: peeled fully-peeled sorted 
+# pack-refs with: peeled fully-peeled sorted
 619fb2305697c1eb4a6e248af03eab2c8c57237d refs/remotes/origin/array-sequence-fix
 1423623205a5d656ec2f068b948dcf5f02146f2f refs/remotes/origin/cpp17-aligned-new
 fd3a93c520a661b78e177280128a9c855d7f5be5 refs/remotes/origin/fold-expression-caster

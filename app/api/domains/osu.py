@@ -6,7 +6,6 @@ import hashlib
 import random
 import secrets
 import time
-import discord
 from base64 import b64decode
 from collections import defaultdict
 from enum import IntEnum
@@ -26,6 +25,9 @@ from urllib.parse import unquote_plus
 
 import bcrypt
 import databases.core
+import discord
+from discord_webhook import DiscordEmbed
+from discord_webhook import DiscordWebhook
 from fastapi import status
 from fastapi.datastructures import FormData
 from fastapi.datastructures import UploadFile
@@ -55,7 +57,6 @@ from app.constants.clientflags import ClientFlags
 from app.constants.gamemodes import GameMode
 from app.constants.mods import Mods
 from app.discord import Webhook
-from discord_webhook import DiscordWebhook, DiscordEmbed
 from app.logging import Ansi
 from app.logging import log
 from app.logging import printc
@@ -110,6 +111,7 @@ def authenticate_player_session(
         )
 
     return wrapper
+
 
 async def beatmaps(request: Request):
     return RedirectResponse(
@@ -619,12 +621,12 @@ async def osuSubmitModularSelector(
     # through but ac'd if not found?
     # TODO: validate token format
     # TODO: save token in the database
-    #token: str = Header(...),
+    # token: str = Header(...),
     # TODO: do ft & st contain pauses?
     exited_out: bool = Form(..., alias="x"),
     fail_time: int = Form(..., alias="ft"),
     visual_settings_b64: bytes = Form(..., alias="fs"),
-    #updated_beatmap_hash: str = Form(..., alias="bmk"),
+    # updated_beatmap_hash: str = Form(..., alias="bmk"),
     storyboard_md5: Optional[str] = Form(None, alias="sbk"),
     iv_b64: bytes = Form(..., alias="iv"),
     unique_ids: str = Form(..., alias="c1"),  # TODO: more validaton
@@ -708,9 +710,9 @@ async def osuSubmitModularSelector(
         ), f"online score checksum mismatch ({server_score_checksum} != {score.client_checksum})"
 
         # assert beatmap hashes match
-        #assert (
+        # assert (
         #    updated_beatmap_hash == bmap_md5
-        #), f"beatmap md5 checksum mismatch ({updated_beatmap_hash} != {bmap_md5}"
+        # ), f"beatmap md5 checksum mismatch ({updated_beatmap_hash} != {bmap_md5}"
 
     except AssertionError as exc:
         # NOTE: this is undergoing a temporary trial period,
@@ -850,33 +852,98 @@ async def osuSubmitModularSelector(
                 announce_chan.send(" ".join(ann), sender=score.player, to_self=True)
 
                 webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_SCORE_WEBHOOK)
-                embed = DiscordEmbed(title='New score by {}!'.format(score.player), description='submitted #1 on: {}+{!r} with {:.2f}% for {}.'.format(score.bmap.embed, score.mods, score.acc, performance), color='03b2f8')
-                embed.set_author(name='{}'.format(score.player), url='https://osu.risunasa.tk/u/{}'.format(score.player.id), icon_url='https://a.risunasa.tk/{}'.format(score.player.id))
-                embed.set_image(url='https://assets.ppy.sh/beatmaps/{}/covers/cover.jpg'.format(score.bmap.set_id))
-                embed.set_thumbnail(url='https://a.risunasa.tk/{}'.format(score.player.id))
-                embed.set_footer(text='played on osu!risunasa', icon_url='https://osu.risunasa.tk/static/favicon/logo.png')
+                embed = DiscordEmbed(
+                    title=f"New score by {score.player}!",
+                    description="submitted #1 on: {}+{!r} with {:.2f}% for {}.".format(
+                        score.bmap.embed, score.mods, score.acc, performance,
+                    ),
+                    color="03b2f8",
+                )
+                embed.set_author(
+                    name=f"{score.player}",
+                    url=f"https://osu.risunasa.tk/u/{score.player.id}",
+                    icon_url=f"https://a.risunasa.tk/{score.player.id}",
+                )
+                embed.set_image(
+                    url="https://assets.ppy.sh/beatmaps/{}/covers/cover.jpg".format(
+                        score.bmap.set_id,
+                    ),
+                )
+                embed.set_thumbnail(
+                    url=f"https://a.risunasa.tk/{score.player.id}",
+                )
+                embed.set_footer(
+                    text="played on osu!risunasa",
+                    icon_url="https://osu.risunasa.tk/static/favicon/logo.png",
+                )
                 embed.set_timestamp()
                 webhook.add_embed(embed)
                 response = webhook.execute()
 
-                if score.pp > 500 and not score.player.priv & Privileges.WHITELISTED and not score.mods & Mods.RELAX:
+                if (
+                    score.pp > 500
+                    and not score.player.priv & Privileges.WHITELISTED
+                    and not score.mods & Mods.RELAX
+                ):
                     webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
-                    embed = DiscordEmbed(title='Sus score by {}!!!'.format(score.player), description='submitted on: {}+{!r} with {:.2f}% for {}.'.format(score.bmap.embed, score.mods, score.acc, score.pp), color='ff0000')
-                    embed.set_author(name='{}'.format(score.player), url='https://osu.risunasa.tk/u/{}'.format(score.player.id), icon_url='https://a.risunasa.tk/{}'.format(score.player.id))
-                    embed.set_image(url='https://assets.ppy.sh/beatmaps/{}/covers/cover.jpg'.format(score.bmap.set_id))
-                    embed.set_thumbnail(url='https://a.risunasa.tk/{}'.format(score.player.id))
-                    embed.set_footer(text='played on osu!risunasa', icon_url='https://osu.risunasa.tk/static/favicon/logo.png')
+                    embed = DiscordEmbed(
+                        title=f"Sus score by {score.player}!!!",
+                        description="submitted on: {}+{!r} with {:.2f}% for {}.".format(
+                            score.bmap.embed, score.mods, score.acc, score.pp,
+                        ),
+                        color="ff0000",
+                    )
+                    embed.set_author(
+                        name=f"{score.player}",
+                        url=f"https://osu.risunasa.tk/u/{score.player.id}",
+                        icon_url=f"https://a.risunasa.tk/{score.player.id}",
+                    )
+                    embed.set_image(
+                        url="https://assets.ppy.sh/beatmaps/{}/covers/cover.jpg".format(
+                            score.bmap.set_id,
+                        ),
+                    )
+                    embed.set_thumbnail(
+                        url=f"https://a.risunasa.tk/{score.player.id}",
+                    )
+                    embed.set_footer(
+                        text="played on osu!risunasa",
+                        icon_url="https://osu.risunasa.tk/static/favicon/logo.png",
+                    )
                     embed.set_timestamp()
                     webhook.add_embed(embed)
                     response = webhook.execute()
 
-                if score.pp > 1000 and not score.player.priv & Privileges.WHITELISTED and score.mods & Mods.RELAX:
+                if (
+                    score.pp > 1000
+                    and not score.player.priv & Privileges.WHITELISTED
+                    and score.mods & Mods.RELAX
+                ):
                     webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
-                    embed = DiscordEmbed(title='Sus score by {}!!!'.format(score.player), description='submitted on: {}+{!r} with {:.2f}% for {}.'.format(score.bmap.embed, score.mods, score.acc, score.pp), color='ff0000')
-                    embed.set_author(name='{}'.format(score.player), url='https://osu.risunasa.tk/u/{}'.format(score.player.id), icon_url='https://a.risunasa.tk/{}'.format(score.player.id))
-                    embed.set_image(url='https://assets.ppy.sh/beatmaps/{}/covers/cover.jpg'.format(score.bmap.set_id))
-                    embed.set_thumbnail(url='https://a.risunasa.tk/{}'.format(score.player.id))
-                    embed.set_footer(text='played on osu!risunasa', icon_url='https://osu.risunasa.tk/static/favicon/logo.png')
+                    embed = DiscordEmbed(
+                        title=f"Sus score by {score.player}!!!",
+                        description="submitted on: {}+{!r} with {:.2f}% for {}.".format(
+                            score.bmap.embed, score.mods, score.acc, score.pp,
+                        ),
+                        color="ff0000",
+                    )
+                    embed.set_author(
+                        name=f"{score.player}",
+                        url=f"https://osu.risunasa.tk/u/{score.player.id}",
+                        icon_url=f"https://a.risunasa.tk/{score.player.id}",
+                    )
+                    embed.set_image(
+                        url="https://assets.ppy.sh/beatmaps/{}/covers/cover.jpg".format(
+                            score.bmap.set_id,
+                        ),
+                    )
+                    embed.set_thumbnail(
+                        url=f"https://a.risunasa.tk/{score.player.id}",
+                    )
+                    embed.set_footer(
+                        text="played on osu!risunasa",
+                        icon_url="https://osu.risunasa.tk/static/favicon/logo.png",
+                    )
                     embed.set_timestamp()
                     webhook.add_embed(embed)
                     response = webhook.execute()
