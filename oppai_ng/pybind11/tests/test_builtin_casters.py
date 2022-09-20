@@ -1,9 +1,10 @@
-# -*- coding: utf-8 -*-
-import pytest
+from __future__ import annotations
 
 import env
-from pybind11_tests import IncType, UserType
+import pytest
 from pybind11_tests import builtin_casters as m
+from pybind11_tests import IncType
+from pybind11_tests import UserType
 
 
 def test_simple_string():
@@ -12,12 +13,12 @@ def test_simple_string():
 
 def test_unicode_conversion():
     """Tests unicode conversion and error reporting."""
-    assert m.good_utf8_string() == u"Say utf8‽ 🎂 𝐀"
-    assert m.good_utf16_string() == u"b‽🎂𝐀z"
-    assert m.good_utf32_string() == u"a𝐀🎂‽z"
-    assert m.good_wchar_string() == u"a⸘𝐀z"
+    assert m.good_utf8_string() == "Say utf8‽ 🎂 𝐀"
+    assert m.good_utf16_string() == "b‽🎂𝐀z"
+    assert m.good_utf32_string() == "a𝐀🎂‽z"
+    assert m.good_wchar_string() == "a⸘𝐀z"
     if hasattr(m, "has_u8string"):
-        assert m.good_utf8_u8string() == u"Say utf8‽ 🎂 𝐀"
+        assert m.good_utf8_u8string() == "Say utf8‽ 🎂 𝐀"
 
     with pytest.raises(UnicodeDecodeError):
         m.bad_utf8_string()
@@ -37,10 +38,10 @@ def test_unicode_conversion():
             m.bad_utf8_u8string()
 
     assert m.u8_Z() == "Z"
-    assert m.u8_eacute() == u"é"
-    assert m.u16_ibang() == u"‽"
-    assert m.u32_mathbfA() == u"𝐀"
-    assert m.wchar_heart() == u"♥"
+    assert m.u8_eacute() == "é"
+    assert m.u16_ibang() == "‽"
+    assert m.u32_mathbfA() == "𝐀"
+    assert m.wchar_heart() == "♥"
     if hasattr(m, "has_u8string"):
         assert m.u8_char8_Z() == "Z"
 
@@ -49,72 +50,72 @@ def test_single_char_arguments():
     """Tests failures for passing invalid inputs to char-accepting functions"""
 
     def toobig_message(r):
-        return "Character code point not in range({:#x})".format(r)
+        return f"Character code point not in range({r:#x})"
 
     toolong_message = "Expected a character, but multi-character string found"
 
-    assert m.ord_char(u"a") == 0x61  # simple ASCII
-    assert m.ord_char_lv(u"b") == 0x62
+    assert m.ord_char("a") == 0x61  # simple ASCII
+    assert m.ord_char_lv("b") == 0x62
     assert (
-        m.ord_char(u"é") == 0xE9
+        m.ord_char("é") == 0xE9
     )  # requires 2 bytes in utf-8, but can be stuffed in a char
     with pytest.raises(ValueError) as excinfo:
-        assert m.ord_char(u"Ā") == 0x100  # requires 2 bytes, doesn't fit in a char
+        assert m.ord_char("Ā") == 0x100  # requires 2 bytes, doesn't fit in a char
     assert str(excinfo.value) == toobig_message(0x100)
     with pytest.raises(ValueError) as excinfo:
-        assert m.ord_char(u"ab")
+        assert m.ord_char("ab")
     assert str(excinfo.value) == toolong_message
 
-    assert m.ord_char16(u"a") == 0x61
-    assert m.ord_char16(u"é") == 0xE9
-    assert m.ord_char16_lv(u"ê") == 0xEA
-    assert m.ord_char16(u"Ā") == 0x100
-    assert m.ord_char16(u"‽") == 0x203D
-    assert m.ord_char16(u"♥") == 0x2665
-    assert m.ord_char16_lv(u"♡") == 0x2661
+    assert m.ord_char16("a") == 0x61
+    assert m.ord_char16("é") == 0xE9
+    assert m.ord_char16_lv("ê") == 0xEA
+    assert m.ord_char16("Ā") == 0x100
+    assert m.ord_char16("‽") == 0x203D
+    assert m.ord_char16("♥") == 0x2665
+    assert m.ord_char16_lv("♡") == 0x2661
     with pytest.raises(ValueError) as excinfo:
-        assert m.ord_char16(u"🎂") == 0x1F382  # requires surrogate pair
+        assert m.ord_char16("🎂") == 0x1F382  # requires surrogate pair
     assert str(excinfo.value) == toobig_message(0x10000)
     with pytest.raises(ValueError) as excinfo:
-        assert m.ord_char16(u"aa")
+        assert m.ord_char16("aa")
     assert str(excinfo.value) == toolong_message
 
-    assert m.ord_char32(u"a") == 0x61
-    assert m.ord_char32(u"é") == 0xE9
-    assert m.ord_char32(u"Ā") == 0x100
-    assert m.ord_char32(u"‽") == 0x203D
-    assert m.ord_char32(u"♥") == 0x2665
-    assert m.ord_char32(u"🎂") == 0x1F382
+    assert m.ord_char32("a") == 0x61
+    assert m.ord_char32("é") == 0xE9
+    assert m.ord_char32("Ā") == 0x100
+    assert m.ord_char32("‽") == 0x203D
+    assert m.ord_char32("♥") == 0x2665
+    assert m.ord_char32("🎂") == 0x1F382
     with pytest.raises(ValueError) as excinfo:
-        assert m.ord_char32(u"aa")
+        assert m.ord_char32("aa")
     assert str(excinfo.value) == toolong_message
 
-    assert m.ord_wchar(u"a") == 0x61
-    assert m.ord_wchar(u"é") == 0xE9
-    assert m.ord_wchar(u"Ā") == 0x100
-    assert m.ord_wchar(u"‽") == 0x203D
-    assert m.ord_wchar(u"♥") == 0x2665
+    assert m.ord_wchar("a") == 0x61
+    assert m.ord_wchar("é") == 0xE9
+    assert m.ord_wchar("Ā") == 0x100
+    assert m.ord_wchar("‽") == 0x203D
+    assert m.ord_wchar("♥") == 0x2665
     if m.wchar_size == 2:
         with pytest.raises(ValueError) as excinfo:
-            assert m.ord_wchar(u"🎂") == 0x1F382  # requires surrogate pair
+            assert m.ord_wchar("🎂") == 0x1F382  # requires surrogate pair
         assert str(excinfo.value) == toobig_message(0x10000)
     else:
-        assert m.ord_wchar(u"🎂") == 0x1F382
+        assert m.ord_wchar("🎂") == 0x1F382
     with pytest.raises(ValueError) as excinfo:
-        assert m.ord_wchar(u"aa")
+        assert m.ord_wchar("aa")
     assert str(excinfo.value) == toolong_message
 
     if hasattr(m, "has_u8string"):
-        assert m.ord_char8(u"a") == 0x61  # simple ASCII
-        assert m.ord_char8_lv(u"b") == 0x62
+        assert m.ord_char8("a") == 0x61  # simple ASCII
+        assert m.ord_char8_lv("b") == 0x62
         assert (
-            m.ord_char8(u"é") == 0xE9
+            m.ord_char8("é") == 0xE9
         )  # requires 2 bytes in utf-8, but can be stuffed in a char
         with pytest.raises(ValueError) as excinfo:
-            assert m.ord_char8(u"Ā") == 0x100  # requires 2 bytes, doesn't fit in a char
+            assert m.ord_char8("Ā") == 0x100  # requires 2 bytes, doesn't fit in a char
         assert str(excinfo.value) == toobig_message(0x100)
         with pytest.raises(ValueError) as excinfo:
-            assert m.ord_char8(u"ab")
+            assert m.ord_char8("ab")
         assert str(excinfo.value) == toolong_message
 
 
@@ -134,7 +135,7 @@ def test_bytes_to_string():
     assert m.strlen(to_bytes("a\x00b")) == 1  # C-string limitation
 
     # passing in a utf8 encoded string should work
-    assert m.string_length(u"💩".encode("utf8")) == 4
+    assert m.string_length("💩".encode()) == 4
 
 
 @pytest.mark.skipif(not hasattr(m, "has_string_view"), reason="no <string_view>")
@@ -142,26 +143,26 @@ def test_string_view(capture):
     """Tests support for C++17 string_view arguments and return values"""
     assert m.string_view_chars("Hi") == [72, 105]
     assert m.string_view_chars("Hi 🎂") == [72, 105, 32, 0xF0, 0x9F, 0x8E, 0x82]
-    assert m.string_view16_chars(u"Hi 🎂") == [72, 105, 32, 0xD83C, 0xDF82]
-    assert m.string_view32_chars(u"Hi 🎂") == [72, 105, 32, 127874]
+    assert m.string_view16_chars("Hi 🎂") == [72, 105, 32, 0xD83C, 0xDF82]
+    assert m.string_view32_chars("Hi 🎂") == [72, 105, 32, 127874]
     if hasattr(m, "has_u8string"):
         assert m.string_view8_chars("Hi") == [72, 105]
-        assert m.string_view8_chars(u"Hi 🎂") == [72, 105, 32, 0xF0, 0x9F, 0x8E, 0x82]
+        assert m.string_view8_chars("Hi 🎂") == [72, 105, 32, 0xF0, 0x9F, 0x8E, 0x82]
 
-    assert m.string_view_return() == u"utf8 secret 🎂"
-    assert m.string_view16_return() == u"utf16 secret 🎂"
-    assert m.string_view32_return() == u"utf32 secret 🎂"
+    assert m.string_view_return() == "utf8 secret 🎂"
+    assert m.string_view16_return() == "utf16 secret 🎂"
+    assert m.string_view32_return() == "utf32 secret 🎂"
     if hasattr(m, "has_u8string"):
-        assert m.string_view8_return() == u"utf8 secret 🎂"
+        assert m.string_view8_return() == "utf8 secret 🎂"
 
     with capture:
         m.string_view_print("Hi")
         m.string_view_print("utf8 🎂")
-        m.string_view16_print(u"utf16 🎂")
-        m.string_view32_print(u"utf32 🎂")
+        m.string_view16_print("utf16 🎂")
+        m.string_view32_print("utf32 🎂")
     assert (
         capture
-        == u"""
+        == """
         Hi 2
         utf8 🎂 9
         utf16 🎂 8
@@ -171,10 +172,10 @@ def test_string_view(capture):
     if hasattr(m, "has_u8string"):
         with capture:
             m.string_view8_print("Hi")
-            m.string_view8_print(u"utf8 🎂")
+            m.string_view8_print("utf8 🎂")
         assert (
             capture
-            == u"""
+            == """
             Hi 2
             utf8 🎂 9
         """
@@ -183,11 +184,11 @@ def test_string_view(capture):
     with capture:
         m.string_view_print("Hi, ascii")
         m.string_view_print("Hi, utf8 🎂")
-        m.string_view16_print(u"Hi, utf16 🎂")
-        m.string_view32_print(u"Hi, utf32 🎂")
+        m.string_view16_print("Hi, utf16 🎂")
+        m.string_view32_print("Hi, utf32 🎂")
     assert (
         capture
-        == u"""
+        == """
         Hi, ascii 9
         Hi, utf8 🎂 13
         Hi, utf16 🎂 12
@@ -197,20 +198,20 @@ def test_string_view(capture):
     if hasattr(m, "has_u8string"):
         with capture:
             m.string_view8_print("Hi, ascii")
-            m.string_view8_print(u"Hi, utf8 🎂")
+            m.string_view8_print("Hi, utf8 🎂")
         assert (
             capture
-            == u"""
+            == """
             Hi, ascii 9
             Hi, utf8 🎂 13
         """
         )
 
     assert m.string_view_bytes() == b"abc \x80\x80 def"
-    assert m.string_view_str() == u"abc ‽ def"
-    assert m.string_view_from_bytes(u"abc ‽ def".encode("utf-8")) == u"abc ‽ def"
+    assert m.string_view_str() == "abc ‽ def"
+    assert m.string_view_from_bytes("abc ‽ def".encode()) == "abc ‽ def"
     if hasattr(m, "has_u8string"):
-        assert m.string_view8_str() == u"abc ‽ def"
+        assert m.string_view8_str() == "abc ‽ def"
     if not env.PY2:
         assert m.string_view_memoryview() == "Have some 🎂".encode()
 
@@ -262,36 +263,36 @@ def test_integer_casting():
 
 
 def test_int_convert():
-    class Int(object):
+    class Int:
         def __int__(self):
             return 42
 
-    class NotInt(object):
+    class NotInt:
         pass
 
-    class Float(object):
+    class Float:
         def __float__(self):
             return 41.99999
 
-    class Index(object):
+    class Index:
         def __index__(self):
             return 42
 
-    class IntAndIndex(object):
+    class IntAndIndex:
         def __int__(self):
             return 42
 
         def __index__(self):
             return 0
 
-    class RaisingTypeErrorOnIndex(object):
+    class RaisingTypeErrorOnIndex:
         def __index__(self):
             raise TypeError
 
         def __int__(self):
             return 42
 
-    class RaisingValueErrorOnIndex(object):
+    class RaisingValueErrorOnIndex:
         def __index__(self):
             raise ValueError
 
@@ -475,7 +476,7 @@ def test_bool_caster():
     require_implicit(None)
     assert convert(None) is False
 
-    class A(object):
+    class A:
         def __init__(self, x):
             self.x = x
 
@@ -485,7 +486,7 @@ def test_bool_caster():
         def __bool__(self):
             return self.x
 
-    class B(object):
+    class B:
         pass
 
     # Arbitrary objects are not accepted

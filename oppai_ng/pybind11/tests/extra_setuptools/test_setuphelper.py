@@ -1,4 +1,5 @@
-# -*- coding: utf-8 -*-
+from __future__ import annotations
+
 import os
 import subprocess
 import sys
@@ -19,7 +20,7 @@ def test_simple_setup_py(monkeypatch, tmpdir, parallel, std):
 
     (tmpdir / "setup.py").write_text(
         dedent(
-            u"""\
+            """\
             import sys
             sys.path.append({MAIN_DIR!r})
 
@@ -51,14 +52,14 @@ def test_simple_setup_py(monkeypatch, tmpdir, parallel, std):
                 cmdclass=cmdclass,
                 ext_modules=ext_modules,
             )
-            """
+            """,
         ).format(MAIN_DIR=MAIN_DIR, std=std, parallel=parallel),
         encoding="ascii",
     )
 
     (tmpdir / "main.cpp").write_text(
         dedent(
-            u"""\
+            """\
             #include <pybind11/pybind11.h>
 
             int f(int x) {
@@ -67,7 +68,7 @@ def test_simple_setup_py(monkeypatch, tmpdir, parallel, std):
             PYBIND11_MODULE(simple_setup, m) {
                 m.def("f", &f);
             }
-            """
+            """,
         ),
         encoding="ascii",
     )
@@ -96,16 +97,16 @@ def test_simple_setup_py(monkeypatch, tmpdir, parallel, std):
 
     (tmpdir / "test.py").write_text(
         dedent(
-            u"""\
+            """\
             import simple_setup
             assert simple_setup.f(3) == 9
-            """
+            """,
         ),
         encoding="ascii",
     )
 
     subprocess.check_call(
-        [sys.executable, "test.py"], stdout=sys.stdout, stderr=sys.stderr
+        [sys.executable, "test.py"], stdout=sys.stdout, stderr=sys.stderr,
     )
 
 

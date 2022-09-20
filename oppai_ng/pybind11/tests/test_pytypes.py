@@ -1,11 +1,9 @@
-# -*- coding: utf-8 -*-
-from __future__ import division
+from __future__ import annotations
 
 import sys
 
-import pytest
-
 import env
+import pytest
 from pybind11_tests import debug_enabled
 from pybind11_tests import pytypes as m
 
@@ -132,7 +130,7 @@ def test_str(doc):
 
     assert doc(m.str_from_bytes) == "str_from_bytes() -> str"
 
-    class A(object):
+    class A:
         def __str__(self):
             return "this is a str"
 
@@ -162,9 +160,9 @@ def test_str(doc):
         assert m.str_from_handle(malformed_utf8) == "b'\\x80'"
 
     assert m.str_from_string_from_str("this is a str") == "this is a str"
-    ucs_surrogates_str = u"\udcc3"
+    ucs_surrogates_str = "\udcc3"
     if env.PY2:
-        assert u"\udcc3" == m.str_from_string_from_str(ucs_surrogates_str)
+        assert "\udcc3" == m.str_from_string_from_str(ucs_surrogates_str)
     else:
         with pytest.raises(UnicodeEncodeError):
             m.str_from_string_from_str(ucs_surrogates_str)
@@ -177,7 +175,7 @@ def test_bytes(doc):
     assert m.bytes_from_str().decode() == "bar"
 
     assert doc(m.bytes_from_str) == "bytes_from_str() -> {}".format(
-        "str" if env.PY2 else "bytes"
+        "str" if env.PY2 else "bytes",
     )
 
 
@@ -273,7 +271,7 @@ def test_constructors():
     if env.PY2:
         # Note that bytes.__name__ == 'str' in Python 2.
         # pybind11::str is unicode even under Python 2.
-        expected["bytes"] = bytes()
+        expected["bytes"] = b''
         expected["str"] = unicode()  # noqa: F821
     assert m.default_constructors() == expected
 
@@ -296,7 +294,7 @@ def test_constructors():
         inputs["bytes"] = b"41"
         inputs["str"] = 42
         expected["bytes"] = b"41"
-        expected["str"] = u"42"
+        expected["str"] = "42"
 
     assert m.converting_constructors(inputs) == expected
     assert m.cast_functions(inputs) == expected
@@ -324,7 +322,7 @@ def test_non_converting_constructors():
             with pytest.raises(TypeError) as excinfo:
                 m.nonconverting_constructor(t, v, move)
             expected_error = "Object of type '{}' is not an instance of '{}'".format(
-                type(v).__name__, t
+                type(v).__name__, t,
             )
             assert str(excinfo.value) == expected_error
 
@@ -332,24 +330,24 @@ def test_non_converting_constructors():
 def test_pybind11_str_raw_str():
     # specifically to exercise pybind11::str::raw_str
     cvt = m.convert_to_pybind11_str
-    assert cvt(u"Str") == u"Str"
-    assert cvt(b"Bytes") == u"Bytes" if env.PY2 else "b'Bytes'"
-    assert cvt(None) == u"None"
-    assert cvt(False) == u"False"
-    assert cvt(True) == u"True"
-    assert cvt(42) == u"42"
-    assert cvt(2 ** 65) == u"36893488147419103232"
-    assert cvt(-1.50) == u"-1.5"
-    assert cvt(()) == u"()"
-    assert cvt((18,)) == u"(18,)"
-    assert cvt([]) == u"[]"
-    assert cvt([28]) == u"[28]"
-    assert cvt({}) == u"{}"
-    assert cvt({3: 4}) == u"{3: 4}"
-    assert cvt(set()) == u"set([])" if env.PY2 else "set()"
-    assert cvt({3, 3}) == u"set([3])" if env.PY2 else "{3}"
+    assert cvt("Str") == "Str"
+    assert cvt(b"Bytes") == "Bytes" if env.PY2 else "b'Bytes'"
+    assert cvt(None) == "None"
+    assert cvt(False) == "False"
+    assert cvt(True) == "True"
+    assert cvt(42) == "42"
+    assert cvt(2**65) == "36893488147419103232"
+    assert cvt(-1.50) == "-1.5"
+    assert cvt(()) == "()"
+    assert cvt((18,)) == "(18,)"
+    assert cvt([]) == "[]"
+    assert cvt([28]) == "[28]"
+    assert cvt({}) == "{}"
+    assert cvt({3: 4}) == "{3: 4}"
+    assert cvt(set()) == "set([])" if env.PY2 else "set()"
+    assert cvt({3, 3}) == "set([3])" if env.PY2 else "{3}"
 
-    valid_orig = u"Ǳ"
+    valid_orig = "Ǳ"
     valid_utf8 = valid_orig.encode("utf-8")
     valid_cvt = cvt(valid_utf8)
     if hasattr(m, "PYBIND11_STR_LEGACY_PERMISSIVE"):
@@ -420,14 +418,14 @@ def test_print(capture):
 
 
 def test_hash():
-    class Hashable(object):
+    class Hashable:
         def __init__(self, value):
             self.value = value
 
         def __hash__(self):
             return self.value
 
-    class Unhashable(object):
+    class Unhashable:
         __hash__ = None
 
     assert m.hash_function(Hashable(42)) == 42
@@ -555,9 +553,9 @@ def test_builtin_functions():
 
 def test_isinstance_string_types():
     assert m.isinstance_pybind11_bytes(b"")
-    assert not m.isinstance_pybind11_bytes(u"")
+    assert not m.isinstance_pybind11_bytes("")
 
-    assert m.isinstance_pybind11_str(u"")
+    assert m.isinstance_pybind11_str("")
     if hasattr(m, "PYBIND11_STR_LEGACY_PERMISSIVE"):
         assert m.isinstance_pybind11_str(b"")
     else:
@@ -567,17 +565,17 @@ def test_isinstance_string_types():
 def test_pass_bytes_or_unicode_to_string_types():
     assert m.pass_to_pybind11_bytes(b"Bytes") == 5
     with pytest.raises(TypeError):
-        m.pass_to_pybind11_bytes(u"Str")
+        m.pass_to_pybind11_bytes("Str")
 
     if hasattr(m, "PYBIND11_STR_LEGACY_PERMISSIVE") or env.PY2:
         assert m.pass_to_pybind11_str(b"Bytes") == 5
     else:
         with pytest.raises(TypeError):
             m.pass_to_pybind11_str(b"Bytes")
-    assert m.pass_to_pybind11_str(u"Str") == 3
+    assert m.pass_to_pybind11_str("Str") == 3
 
     assert m.pass_to_std_string(b"Bytes") == 5
-    assert m.pass_to_std_string(u"Str") == 3
+    assert m.pass_to_std_string("Str") == 3
 
     malformed_utf8 = b"\x80"
     if hasattr(m, "PYBIND11_STR_LEGACY_PERMISSIVE"):
@@ -601,7 +599,7 @@ def test_weakref(create_weakref, create_weakref_with_callback):
     from weakref import getweakrefcount
 
     # Apparently, you cannot weakly reference an object()
-    class WeaklyReferenced(object):
+    class WeaklyReferenced:
         pass
 
     def callback(wr):

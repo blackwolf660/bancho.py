@@ -1,11 +1,11 @@
-# -*- coding: utf-8 -*-
-from __future__ import print_function
+from __future__ import annotations
 
 import argparse
 import sys
 import sysconfig
 
-from .commands import get_cmake_dir, get_include
+from .commands import get_cmake_dir
+from .commands import get_include
 
 
 def print_includes():

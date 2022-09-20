@@ -1,9 +1,9 @@
-# -*- coding: utf-8 -*-
+from __future__ import annotations
+
 import re
 
-import pytest
-
 import env  # noqa: F401
+import pytest
 from pybind11_tests import ConstructorStats
 from pybind11_tests import factory_constructors as m
 from pybind11_tests.factory_constructors import tag
@@ -384,7 +384,7 @@ def test_reallocation_b(capture, msg):
         ---
         ~NoisyAlloc()  # Destructor
         noisy delete   # operator delete
-    """
+    """,
     )
 
 
@@ -398,7 +398,7 @@ def test_reallocation_c(capture, msg):
         ---
         ~NoisyAlloc()  # Destructor
         noisy delete   # operator delete
-    """
+    """,
     )
 
 
@@ -413,7 +413,7 @@ def test_reallocation_d(capture, msg):
         ---
         ~NoisyAlloc()  # Destructor
         noisy delete   # operator delete
-    """
+    """,
     )
 
 
@@ -428,7 +428,7 @@ def test_reallocation_e(capture, msg):
         ---
         ~NoisyAlloc()  # Destructor
         noisy delete   # operator delete
-    """
+    """,
     )
 
 
@@ -444,7 +444,7 @@ def test_reallocation_f(capture, msg):
         ---
         ~NoisyAlloc()  # Destructor
         noisy delete   # operator delete
-    """
+    """,
     )
 
 
@@ -461,7 +461,7 @@ def test_reallocation_g(capture, msg):
         ---
         ~NoisyAlloc()  # Destructor
         noisy delete   # operator delete
-    """
+    """,
     )
 
 
@@ -470,7 +470,7 @@ def test_invalid_self():
     """Tests invocation of the pybind-registered base class with an invalid `self` argument.  You
     can only actually do this on Python 3: Python 2 raises an exception itself if you try."""
 
-    class NotPybindDerived(object):
+    class NotPybindDerived:
         pass
 
     # Attempts to initialize with an invalid type passed as `self`:
@@ -496,11 +496,11 @@ def test_invalid_self():
                 m.TestFactory6.__init__(a, tag.alias, 1)
             elif bad == 3:
                 m.TestFactory6.__init__(
-                    NotPybindDerived.__new__(NotPybindDerived), tag.base, 1
+                    NotPybindDerived.__new__(NotPybindDerived), tag.base, 1,
                 )
             elif bad == 4:
                 m.TestFactory6.__init__(
-                    NotPybindDerived.__new__(NotPybindDerived), tag.alias, 1
+                    NotPybindDerived.__new__(NotPybindDerived), tag.alias, 1,
                 )
 
     for arg in (1, 2):

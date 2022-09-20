@@ -1,4 +1,5 @@
-# -*- coding: utf-8 -*-
+from __future__ import annotations
+
 import pytest
 
 m = pytest.importorskip("pybind11_tests.smart_ptr")
@@ -8,7 +9,7 @@ from pybind11_tests import ConstructorStats  # noqa: E402
 def test_smart_ptr(capture):
     # Object1
     for i, o in enumerate(
-        [m.make_object_1(), m.make_object_2(), m.MyObject1(3)], start=1
+        [m.make_object_1(), m.make_object_2(), m.MyObject1(3)], start=1,
     ):
         assert o.getRefCount() == 1
         with capture:
@@ -16,10 +17,10 @@ def test_smart_ptr(capture):
             m.print_object_2(o)
             m.print_object_3(o)
             m.print_object_4(o)
-        assert capture == "MyObject1[{i}]\n".format(i=i) * 4
+        assert capture == f"MyObject1[{i}]\n" * 4
 
     for i, o in enumerate(
-        [m.make_myobject1_1(), m.make_myobject1_2(), m.MyObject1(6), 7], start=4
+        [m.make_myobject1_1(), m.make_myobject1_2(), m.MyObject1(6), 7], start=4,
     ):
         print(o)
         with capture:
@@ -34,12 +35,12 @@ def test_smart_ptr(capture):
             m.print_myobject1_4(o)
 
         times = 4 if isinstance(o, int) else 8
-        assert capture == "MyObject1[{i}]\n".format(i=i) * times
+        assert capture == f"MyObject1[{i}]\n" * times
 
     cstats = ConstructorStats.get(m.MyObject1)
     assert cstats.alive() == 0
-    expected_values = ["MyObject1[{}]".format(i) for i in range(1, 7)] + [
-        "MyObject1[7]"
+    expected_values = [f"MyObject1[{i}]" for i in range(1, 7)] + [
+        "MyObject1[7]",
     ] * 4
     assert cstats.values() == expected_values
     assert cstats.default_constructions == 0
@@ -50,7 +51,7 @@ def test_smart_ptr(capture):
 
     # Object2
     for i, o in zip(
-        [8, 6, 7], [m.MyObject2(8), m.make_myobject2_1(), m.make_myobject2_2()]
+        [8, 6, 7], [m.MyObject2(8), m.make_myobject2_1(), m.make_myobject2_2()],
     ):
         print(o)
         with capture:
@@ -58,7 +59,7 @@ def test_smart_ptr(capture):
             m.print_myobject2_2(o)
             m.print_myobject2_3(o)
             m.print_myobject2_4(o)
-        assert capture == "MyObject2[{i}]\n".format(i=i) * 4
+        assert capture == f"MyObject2[{i}]\n" * 4
 
     cstats = ConstructorStats.get(m.MyObject2)
     assert cstats.alive() == 1
@@ -73,7 +74,7 @@ def test_smart_ptr(capture):
 
     # Object3
     for i, o in zip(
-        [9, 8, 9], [m.MyObject3(9), m.make_myobject3_1(), m.make_myobject3_2()]
+        [9, 8, 9], [m.MyObject3(9), m.make_myobject3_1(), m.make_myobject3_2()],
     ):
         print(o)
         with capture:
@@ -81,7 +82,7 @@ def test_smart_ptr(capture):
             m.print_myobject3_2(o)
             m.print_myobject3_3(o)
             m.print_myobject3_4(o)
-        assert capture == "MyObject3[{i}]\n".format(i=i) * 4
+        assert capture == f"MyObject3[{i}]\n" * 4
 
     cstats = ConstructorStats.get(m.MyObject3)
     assert cstats.alive() == 1
@@ -206,7 +207,7 @@ def test_shared_ptr_from_this_and_references():
     assert stats.alive() == 2
     assert s.set_ref(ref)
     assert s.set_holder(
-        ref
+        ref,
     )  # std::enable_shared_from_this can create a holder from a reference
 
     bad_wp = s.bad_wp  # init_holder_helper(holder_ptr=false, owned=false, bad_wp=true)

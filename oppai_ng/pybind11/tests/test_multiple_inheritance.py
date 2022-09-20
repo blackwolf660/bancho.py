@@ -1,7 +1,7 @@
-# -*- coding: utf-8 -*-
-import pytest
+from __future__ import annotations
 
 import env  # noqa: F401
+import pytest
 from pybind11_tests import ConstructorStats
 from pybind11_tests import multiple_inheritance as m
 
@@ -61,7 +61,7 @@ def test_multiple_inheritance_python():
             m.Base1.__init__(self, i)
             m.Base2.__init__(self, j)
 
-    class B1(object):
+    class B1:
         def v(self):
             return 1
 
@@ -96,7 +96,7 @@ def test_multiple_inheritance_python():
         def v(self):
             return 2
 
-    class B3(object):
+    class B3:
         def v(self):
             return 3
 

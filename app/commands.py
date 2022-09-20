@@ -33,6 +33,8 @@ from typing import Union
 
 import psutil
 import timeago
+from discord_webhook import DiscordEmbed
+from discord_webhook import DiscordWebhook
 from pytimeparse.timeparse import timeparse
 
 import app.logging
@@ -41,10 +43,6 @@ import app.settings
 import app.state
 import app.usecases.performance
 import app.utils
-from app.discord import Webhook
-from discord_webhook import DiscordWebhook, DiscordEmbed
-from app.logging import Ansi
-from app.logging import log
 from app.constants import regexes
 from app.constants.gamemodes import GameMode
 from app.constants.gamemodes import GAMEMODE_REPR_LIST
@@ -52,6 +50,9 @@ from app.constants.mods import Mods
 from app.constants.mods import SPEED_CHANGING_MODS
 from app.constants.privileges import ClanPrivileges
 from app.constants.privileges import Privileges
+from app.discord import Webhook
+from app.logging import Ansi
+from app.logging import log
 from app.objects.beatmap import Beatmap
 from app.objects.beatmap import ensure_local_osu_file
 from app.objects.beatmap import RankedStatus
@@ -197,34 +198,38 @@ async def _help(ctx: Context) -> Optional[str]:
 
     return "\n".join(l)
 
+
 @command(Privileges.NORMAL, hidden=True)
 async def _link(ctx: Context) -> str:
     """Link your osu account on our discord server"""
     discordtag = " ".join(ctx.args[0:])
     if not discordtag:
-        return f'Please enter your discord tag.\nExample usage: !link def750#0947'
+        return f"Please enter your discord tag.\nExample usage: !link def750#0947"
 
-    #Check if on chat
+    # Check if on chat
     if ctx.recipient is not app.state.sessions.bot:
-        return f'Command only available in DMs with {app.state.sessions.bot.name}.'
+        return f"Command only available in DMs with {app.state.sessions.bot.name}."
     randcode = random.randrange(10000, 99999)
 
-    if not await app.state.services.database.fetch_all('SELECT osu_id FROM discord WHERE osu_id = %s', [ctx.player.id]):
+    if not await app.state.services.database.fetch_all(
+        "SELECT osu_id FROM discord WHERE osu_id = %s", [ctx.player.id],
+    ):
         await glob.db.execute(
-            'INSERT INTO discord '
-            '(osu_id, discord_tag, code) '
-            'VALUES (%s, %s, %s)',
-            [ctx.player.id, discordtag, randcode]
-    )
+            "INSERT INTO discord " "(osu_id, discord_tag, code) " "VALUES (%s, %s, %s)",
+            [ctx.player.id, discordtag, randcode],
+        )
     else:
         await app.state.services.database.execute(
-            'UPDATE discord '
-            'SET osu_id = %s, discord_tag = %s, code = %s '
-            'WHERE osu_id = %s',
-            [ctx.player.id, discordtag, randcode, ctx.player.id]
+            "UPDATE discord "
+            "SET osu_id = %s, discord_tag = %s, code = %s "
+            "WHERE osu_id = %s",
+            [ctx.player.id, discordtag, randcode, ctx.player.id],
         )
-    print(f"<{ctx.player.name} ({ctx.player.id})> Executed link command, discord tag specified: {discordtag}, code recieved: {randcode}")
+    print(
+        f"<{ctx.player.name} ({ctx.player.id})> Executed link command, discord tag specified: {discordtag}, code recieved: {randcode}",
+    )
     return f"Your verification code: {randcode} \nDiscord Tag you specified: {discordtag} \nIf it's incorrect please execute command again ;)"
+
 
 @command(Privileges.NORMAL)
 async def roll(ctx: Context) -> Optional[str]:
@@ -340,11 +345,13 @@ async def changename(ctx: Context) -> Optional[str]:
 async def rankrecalc(ctx: Context) -> Optional[str]:
     """I guess you can understood what this comma do.."""
     alert_msg = "All user ranks has been recalculated! :rolling_eyes: "
-    scores = await app.state.services.database.fetch_all("SELECT stats.id,users.priv,country,stats.pp,stats.mode FROM `users` INNER JOIN stats on users.id = stats.id")
+    scores = await app.state.services.database.fetch_all(
+        "SELECT stats.id,users.priv,country,stats.pp,stats.mode FROM `users` INNER JOIN stats on users.id = stats.id",
+    )
     app.state.sessions.players.enqueue(app.packets.notification(alert_msg))
 
     for i in scores:
-     
+
         if i[1] & Privileges.NORMAL:
             user_id = i[0]
             await app.state.services.redis.zadd(
@@ -358,7 +365,8 @@ async def rankrecalc(ctx: Context) -> Optional[str]:
                 {str(user_id): i[3]},
             )
 
-    return "Sucessfully recalculated!" 
+    return "Sucessfully recalculated!"
+
 
 @command(Privileges.NORMAL, aliases=["bloodcat", "beatconnect", "chimu", "q"])
 async def maplink(ctx: Context) -> Optional[str]:
@@ -662,11 +670,26 @@ async def request(ctx: Context) -> Optional[str]:
     )
 
     webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
-    embed = DiscordEmbed(title='New request from {}!'.format(ctx.player.name), description='{} request {} for rank/love.\nhttps://osu.ppy.sh/b/{}'.format(ctx.player.name, bmap, bmap.id), color='2cc77c')
-    embed.set_author(name='{}'.format(ctx.player.name), url='https://osu.okayu.me/u/{}'.format(ctx.player.id), icon_url='https://a.okayu.me/{}'.format(ctx.player.id))
-    embed.set_image(url='https://assets.ppy.sh/beatmaps/{}/covers/cover.jpg'.format(bmap.set_id))
-    embed.set_thumbnail(url='https://a.okayu.me/{}'.format(ctx.player.id))
-    embed.set_footer(text='New request on osu!okayu', icon_url='https://osu.okayu.me/static/favicon/logo.png')
+    embed = DiscordEmbed(
+        title=f"New request from {ctx.player.name}!",
+        description="{} request {} for rank/love.\nhttps://osu.ppy.sh/b/{}".format(
+            ctx.player.name, bmap, bmap.id,
+        ),
+        color="2cc77c",
+    )
+    embed.set_author(
+        name=f"{ctx.player.name}",
+        url=f"https://osu.okayu.me/u/{ctx.player.id}",
+        icon_url=f"https://a.okayu.me/{ctx.player.id}",
+    )
+    embed.set_image(
+        url=f"https://assets.ppy.sh/beatmaps/{bmap.set_id}/covers/cover.jpg",
+    )
+    embed.set_thumbnail(url=f"https://a.okayu.me/{ctx.player.id}")
+    embed.set_footer(
+        text="New request on osu!okayu",
+        icon_url="https://osu.okayu.me/static/favicon/logo.png",
+    )
     embed.set_timestamp()
     webhook.add_embed(embed)
     response = webhook.execute()
@@ -807,11 +830,26 @@ async def _map(ctx: Context) -> Optional[str]:
         )
 
         webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_NEW_RANKED_WEBHOOK)
-        embed = DiscordEmbed(title='New {}!'.format(new_status), description='{} updated to {} {}.'.format(ctx.player.name, new_status, bmap), color='2cc77c')
-        embed.set_author(name='{}'.format(ctx.player.name), url='https://osu.okayu.me/u/{}'.format(ctx.player.id), icon_url='https://a.okayu.me/{}'.format(ctx.player.id))
-        embed.set_image(url='https://assets.ppy.sh/beatmaps/{}/covers/cover.jpg'.format(bmap.set_id))
-        embed.set_thumbnail(url='https://a.okayu.me/{}'.format(ctx.player.id))
-        embed.set_footer(text='{} on osu!okayu'.format(new_status), icon_url='https://osu.okayu.me/static/favicon/logo.png')
+        embed = DiscordEmbed(
+            title=f"New {new_status}!",
+            description="{} updated to {} {}.".format(
+                ctx.player.name, new_status, bmap,
+            ),
+            color="2cc77c",
+        )
+        embed.set_author(
+            name=f"{ctx.player.name}",
+            url=f"https://osu.okayu.me/u/{ctx.player.id}",
+            icon_url=f"https://a.okayu.me/{ctx.player.id}",
+        )
+        embed.set_image(
+            url=f"https://assets.ppy.sh/beatmaps/{bmap.set_id}/covers/cover.jpg",
+        )
+        embed.set_thumbnail(url=f"https://a.okayu.me/{ctx.player.id}")
+        embed.set_footer(
+            text=f"{new_status} on osu!okayu",
+            icon_url="https://osu.okayu.me/static/favicon/logo.png",
+        )
         embed.set_timestamp()
         webhook.add_embed(embed)
         response = webhook.execute()
@@ -1036,7 +1074,7 @@ async def restrict(ctx: Context) -> Optional[str]:
 @command(Privileges.ADMINISTRATOR, hidden=True)
 async def wipeuser(ctx: Context) -> Optional[str]:
     if len(ctx.args) < 1:
-            return "Invalid syntax: !wipeuser <name>"
+        return "Invalid syntax: !wipeuser <name>"
 
     if not (t := await app.state.sessions.players.from_cache_or_sql(name=ctx.args[0])):
         return "Could not find user."
@@ -1417,11 +1455,22 @@ async def recalc(ctx: Context) -> Optional[str]:
         app.state.loop.create_task(recalc_all())
 
         webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
-        embed = DiscordEmbed(title='Started recalculation {}!'.format(ctx.player.name), description='{} started full recalculation!'.format(ctx.player.name), color='ff0000')
-        embed.set_author(name='{}'.format(ctx.player.name), url='https://osu.okayu.me/u/{}'.format(ctx.player.id), icon_url='https://a.okayu.me/{}'.format(ctx.player.id))
-        embed.set_image(url='https://a.okayu.me/{}'.format(ctx.player.id))
-        embed.set_thumbnail(url='https://a.okayu.me/{}'.format(ctx.player.id))
-        embed.set_footer(text='recalculation on osu!okayu', icon_url='https://osu.okayu.me/static/favicon/logo.png')
+        embed = DiscordEmbed(
+            title=f"Started recalculation {ctx.player.name}!",
+            description=f"{ctx.player.name} started full recalculation!",
+            color="ff0000",
+        )
+        embed.set_author(
+            name=f"{ctx.player.name}",
+            url=f"https://osu.okayu.me/u/{ctx.player.id}",
+            icon_url=f"https://a.okayu.me/{ctx.player.id}",
+        )
+        embed.set_image(url=f"https://a.okayu.me/{ctx.player.id}")
+        embed.set_thumbnail(url=f"https://a.okayu.me/{ctx.player.id}")
+        embed.set_footer(
+            text="recalculation on osu!okayu",
+            icon_url="https://osu.okayu.me/static/favicon/logo.png",
+        )
         embed.set_timestamp()
         webhook.add_embed(embed)
         response = webhook.execute()

@@ -16,6 +16,8 @@ from typing import TypedDict
 from typing import Union
 
 import databases.core
+from discord_webhook import DiscordEmbed
+from discord_webhook import DiscordWebhook
 
 import app.packets
 import app.settings
@@ -26,7 +28,6 @@ from app.constants.mods import Mods
 from app.constants.privileges import ClientPrivileges
 from app.constants.privileges import Privileges
 from app.discord import Webhook
-from discord_webhook import DiscordWebhook, DiscordEmbed
 from app.logging import Ansi
 from app.logging import log
 from app.objects.channel import Channel
@@ -146,12 +147,14 @@ class LastNp(TypedDict):
     mode_vn: int
     timeout: float
 
+
 class OsuStream(str, Enum):
     STABLE = "stable"
     BETA = "beta"
     CUTTINGEDGE = "cuttingedge"
     TOURNEY = "tourney"
     DEV = "dev"
+
 
 class OsuVersion:
     # b20200201.2cuttingedge
@@ -586,10 +589,21 @@ class Player:
             del self.restricted  # wipe cached_property
 
         webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
-        embed = DiscordEmbed(title='{} restricted {}!'.format(admin, self.name), description='{} restricted {} for {}.'.format(admin, self.name, reason), color='ff0000')
-        embed.set_author(name='{} has been restricted'.format(self), url='https://osu.risunasa.tk/u/{}'.format(self.id), icon_url='https://a.risunasa.tk/{}'.format(self.id))
-        embed.set_thumbnail(url='https://a.risunasa.tk/{}'.format(self.id))
-        embed.set_footer(text='{} banned on osu!risunasa'.format(self.name), icon_url='https://osu.risunasa.tk/static/favicon/logo.png')
+        embed = DiscordEmbed(
+            title=f"{admin} restricted {self.name}!",
+            description=f"{admin} restricted {self.name} for {reason}.",
+            color="ff0000",
+        )
+        embed.set_author(
+            name=f"{self} has been restricted",
+            url=f"https://osu.risunasa.tk/u/{self.id}",
+            icon_url=f"https://a.risunasa.tk/{self.id}",
+        )
+        embed.set_thumbnail(url=f"https://a.risunasa.tk/{self.id}")
+        embed.set_footer(
+            text=f"{self.name} banned on osu!risunasa",
+            icon_url="https://osu.risunasa.tk/static/favicon/logo.png",
+        )
         embed.set_timestamp()
         webhook.add_embed(embed)
         response = webhook.execute()
@@ -628,10 +642,21 @@ class Player:
             del self.restricted  # wipe cached_property
 
         webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
-        embed = DiscordEmbed(title='{} unrestricted {}!'.format(admin, self.name), description='{} unrestricted {} for {}.'.format(admin, self.name, reason), color='00ff0d')
-        embed.set_author(name='{} has been unrestricted'.format(self.name), url='https://osu.risunasa.tk/u/{}'.format(self.id), icon_url='https://a.risunasa.tk/{}'.format(self.id))
-        embed.set_thumbnail(url='https://a.orisunasa.tk/{}'.format(self.id))
-        embed.set_footer(text='{} unrestricted on osu!risunasa'.format(self.name), icon_url='https://osu.okayu.me/static/favicon/logo.png')
+        embed = DiscordEmbed(
+            title=f"{admin} unrestricted {self.name}!",
+            description=f"{admin} unrestricted {self.name} for {reason}.",
+            color="00ff0d",
+        )
+        embed.set_author(
+            name=f"{self.name} has been unrestricted",
+            url=f"https://osu.risunasa.tk/u/{self.id}",
+            icon_url=f"https://a.risunasa.tk/{self.id}",
+        )
+        embed.set_thumbnail(url=f"https://a.orisunasa.tk/{self.id}")
+        embed.set_footer(
+            text=f"{self.name} unrestricted on osu!risunasa",
+            icon_url="https://osu.okayu.me/static/favicon/logo.png",
+        )
         embed.set_timestamp()
         webhook.add_embed(embed)
         response = webhook.execute()
@@ -668,10 +693,21 @@ class Player:
             self.leave_match()
 
         webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
-        embed = DiscordEmbed(title='{} silence {}!'.format(admin, self.name), description='{} silence {} for {}.'.format(admin, self.name, reason), color='ff0000')
-        embed.set_author(name='{} has been silenced'.format(self.name), url='https://osu.risunasa.tk/u/{}'.format(self.id), icon_url='https://a.risunasa.tk/{}'.format(self.id))
-        embed.set_thumbnail(url='https://a.risunasa.tk/{}'.format(self.id))
-        embed.set_footer(text='{} silenced on osu!risunasa'.format(self.name), icon_url='https://osu.risunasa.tk/static/favicon/logo.png')
+        embed = DiscordEmbed(
+            title=f"{admin} silence {self.name}!",
+            description=f"{admin} silence {self.name} for {reason}.",
+            color="ff0000",
+        )
+        embed.set_author(
+            name=f"{self.name} has been silenced",
+            url=f"https://osu.risunasa.tk/u/{self.id}",
+            icon_url=f"https://a.risunasa.tk/{self.id}",
+        )
+        embed.set_thumbnail(url=f"https://a.risunasa.tk/{self.id}")
+        embed.set_footer(
+            text=f"{self.name} silenced on osu!risunasa",
+            icon_url="https://osu.risunasa.tk/static/favicon/logo.png",
+        )
         embed.set_timestamp()
         webhook.add_embed(embed)
         response = webhook.execute()
@@ -690,10 +726,21 @@ class Player:
         )
 
         webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
-        embed = DiscordEmbed(title='{} wipe {}!'.format(admin, self.name), description='{} wipe {}.'.format(admin, self.name), color='ff0000')
-        embed.set_author(name='{} has been wiped'.format(self.name), url='https://osu.risunasa.tk/u/{}'.format(self.id), icon_url='https://a.risunasa.tk/{}'.format(self.id))
-        embed.set_thumbnail(url='https://a.risunasa.tk/{}'.format(self.id))
-        embed.set_footer(text='{} wiped on osu!risunasa'.format(self.name), icon_url='https://osu.risunasa.tk/static/favicon/logo.png')
+        embed = DiscordEmbed(
+            title=f"{admin} wipe {self.name}!",
+            description=f"{admin} wipe {self.name}.",
+            color="ff0000",
+        )
+        embed.set_author(
+            name=f"{self.name} has been wiped",
+            url=f"https://osu.risunasa.tk/u/{self.id}",
+            icon_url=f"https://a.risunasa.tk/{self.id}",
+        )
+        embed.set_thumbnail(url=f"https://a.risunasa.tk/{self.id}")
+        embed.set_footer(
+            text=f"{self.name} wiped on osu!risunasa",
+            icon_url="https://osu.risunasa.tk/static/favicon/logo.png",
+        )
         embed.set_timestamp()
         webhook.add_embed(embed)
         response = webhook.execute()
@@ -718,10 +765,21 @@ class Player:
         self.enqueue(app.packets.silence_end(0))
 
         webhook = DiscordWebhook(url=app.settings.DISCORD_AUDIT_LOG_WEBHOOK)
-        embed = DiscordEmbed(title='{} UnSilence {}!'.format(admin, self.name), description='{} UnSilence {} for {}.'.format(admin, self.name, reason), color='00ff0d')
-        embed.set_author(name='{} has been unsilenced'.format(self.id), url='https://osu.risunasa.tk/u/{}'.format(self.id), icon_url='https://a.risunasa.tk/{}'.format(self.id))
-        embed.set_thumbnail(url='https://a.risunasa.tk/{}'.format(admin.id))
-        embed.set_footer(text='{} UnSilenced on osu!risunasa'.format(self.name), icon_url='https://osu.risunasa.tk/static/favicon/logo.png')
+        embed = DiscordEmbed(
+            title=f"{admin} UnSilence {self.name}!",
+            description=f"{admin} UnSilence {self.name} for {reason}.",
+            color="00ff0d",
+        )
+        embed.set_author(
+            name=f"{self.id} has been unsilenced",
+            url=f"https://osu.risunasa.tk/u/{self.id}",
+            icon_url=f"https://a.risunasa.tk/{self.id}",
+        )
+        embed.set_thumbnail(url=f"https://a.risunasa.tk/{admin.id}")
+        embed.set_footer(
+            text=f"{self.name} UnSilenced on osu!risunasa",
+            icon_url="https://osu.risunasa.tk/static/favicon/logo.png",
+        )
         embed.set_timestamp()
         webhook.add_embed(embed)
         response = webhook.execute()

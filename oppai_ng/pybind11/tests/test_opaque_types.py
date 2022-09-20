@@ -1,8 +1,9 @@
-# -*- coding: utf-8 -*-
-import pytest
+from __future__ import annotations
 
-from pybind11_tests import ConstructorStats, UserType
+import pytest
+from pybind11_tests import ConstructorStats
 from pybind11_tests import opaque_types as m
+from pybind11_tests import UserType
 
 
 def test_string_list():
@@ -13,7 +14,7 @@ def test_string_list():
     assert lst.back() == "Element 2"
 
     for i, k in enumerate(lst, start=1):
-        assert k == "Element {}".format(i)
+        assert k == f"Element {i}"
     lst.pop_back()
     assert m.print_opaque_list(lst) == "Opaque list: [Element 1]"
 

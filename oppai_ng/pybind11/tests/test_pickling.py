@@ -1,7 +1,7 @@
-# -*- coding: utf-8 -*-
-import pytest
+from __future__ import annotations
 
 import env
+import pytest
 from pybind11_tests import pickling as m
 
 try:

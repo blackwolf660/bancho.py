@@ -1,9 +1,9 @@
-# -*- coding: utf-8 -*-
+from __future__ import annotations
+
 import re
 
-import pytest
-
 import env  # noqa: F401
+import pytest
 from pybind11_tests import numpy_dtypes as m
 
 np = pytest.importorskip("numpy")
@@ -15,9 +15,9 @@ def simple_dtype():
     return np.dtype(
         {
             "names": ["bool_", "uint_", "float_", "ldbl_"],
-            "formats": ["?", "u4", "f4", "f{}".format(ld.itemsize)],
+            "formats": ["?", "u4", "f4", f"f{ld.itemsize}"],
             "offsets": [0, 4, 8, (16 if ld.alignment > 4 else 12)],
-        }
+        },
     )
 
 
@@ -47,7 +47,7 @@ def packed_dtype_fmt():
     from sys import byteorder
 
     return "[('bool_', '?'), ('uint_', '{e}u4'), ('float_', '{e}f4'), ('ldbl_', '{e}f{}')]".format(
-        np.dtype("longdouble").itemsize, e="<" if byteorder == "little" else ">"
+        np.dtype("longdouble").itemsize, e="<" if byteorder == "little" else ">",
     )
 
 
@@ -66,7 +66,7 @@ def partial_dtype_fmt():
     partial_size = partial_ld_off + ld.itemsize
     partial_end_padding = partial_size % np.dtype("uint64").alignment
     return dt_fmt().format(
-        ld.itemsize, partial_ld_off, partial_size + partial_end_padding
+        ld.itemsize, partial_ld_off, partial_size + partial_end_padding,
     )
 
 
@@ -78,7 +78,7 @@ def partial_nested_fmt():
     partial_end_padding = partial_size % np.dtype("uint64").alignment
     partial_nested_size = partial_nested_off * 2 + partial_size + partial_end_padding
     return "{{'names':['a'], 'formats':[{}], 'offsets':[{}], 'itemsize':{}}}".format(
-        partial_dtype_fmt(), partial_nested_off, partial_nested_size
+        partial_dtype_fmt(), partial_nested_off, partial_nested_size,
     )
 
 
@@ -90,7 +90,7 @@ def test_format_descriptors():
     with pytest.raises(RuntimeError) as excinfo:
         m.get_format_unbound()
     assert re.match(
-        "^NumPy type info missing for .*UnboundStruct.*$", str(excinfo.value)
+        "^NumPy type info missing for .*UnboundStruct.*$", str(excinfo.value),
     )
 
     ld = np.dtype("longdouble")
@@ -126,7 +126,7 @@ def test_dtype(simple_dtype):
     assert m.print_dtypes() == [
         simple_dtype_fmt(),
         packed_dtype_fmt(),
-        "[('a', {}), ('b', {})]".format(simple_dtype_fmt(), packed_dtype_fmt()),
+        f"[('a', {simple_dtype_fmt()}), ('b', {packed_dtype_fmt()})]",
         partial_dtype_fmt(),
         partial_nested_fmt(),
         "[('a', 'S3'), ('b', 'S3')]",
@@ -150,7 +150,7 @@ def test_dtype(simple_dtype):
             "formats": ["int32", "float64"],
             "offsets": [1, 10],
             "itemsize": 20,
-        }
+        },
     )
     d2 = np.dtype([("a", "i4"), ("b", "f4")])
     assert m.test_dtype_ctors() == [
@@ -173,7 +173,7 @@ def test_dtype(simple_dtype):
     ]
 
     assert m.trailing_padding_dtype() == m.buffer_to_dtype(
-        np.zeros(1, m.trailing_padding_dtype())
+        np.zeros(1, m.trailing_padding_dtype()),
     )
 
     assert m.test_dtype_kind() == list("iiiiiuuuuuffffcccbMmO")

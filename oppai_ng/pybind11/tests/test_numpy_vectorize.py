@@ -1,6 +1,6 @@
-# -*- coding: utf-8 -*-
-import pytest
+from __future__ import annotations
 
+import pytest
 from pybind11_tests import numpy_vectorize as m
 
 np = pytest.importorskip("numpy")
@@ -164,7 +164,7 @@ def test_trivial_broadcasting():
         == trivial.c_trivial
     )
     assert trivial.c_trivial == vectorized_is_trivial(
-        np.array([[1, 3, 5], [7, 9, 11]]), np.array([[2, 4, 6], [8, 10, 12]]), 3
+        np.array([[1, 3, 5], [7, 9, 11]]), np.array([[2, 4, 6], [8, 10, 12]]), 3,
     )
     assert (
         vectorized_is_trivial(np.array([[1, 2, 3], [4, 5, 6]]), np.array([2, 3, 4]), 2)
@@ -217,7 +217,7 @@ def test_passthrough_arguments(doc):
                 "arg4: int",
                 "arg5: m.numpy_vectorize.NonPODClass",
                 "arg6: numpy.ndarray[numpy.float64]",
-            ]
+            ],
         )
         + ") -> object"
     )
@@ -233,8 +233,8 @@ def test_passthrough_arguments(doc):
                 [1111111, 2111121, 3111131],
                 [1112111, 2112121, 3112131],
                 [1113111, 2113121, 3113131],
-            ]
-        )
+            ],
+        ),
     )
 
 

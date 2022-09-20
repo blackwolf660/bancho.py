@@ -1,6 +1,6 @@
-# -*- coding: utf-8 -*-
-import pytest
+from __future__ import annotations
 
+import pytest
 from pybind11_tests import ConstructorStats
 from pybind11_tests import sequences_and_iterators as m
 

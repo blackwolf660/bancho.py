@@ -1,9 +1,9 @@
-# -*- coding: utf-8 -*-
-import pytest
+from __future__ import annotations
 
 import env  # noqa: F401
-from pybind11_tests import ConstructorStats
+import pytest
 from pybind11_tests import call_policies as m
+from pybind11_tests import ConstructorStats
 
 
 @pytest.mark.xfail("env.PYPY", reason="sometimes comes out 1 off on PyPy", strict=False)

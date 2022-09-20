@@ -1,9 +1,9 @@
-# -*- coding: utf-8 -*-
+from __future__ import annotations
+
 import datetime
 
-import pytest
-
 import env  # noqa: F401
+import pytest
 from pybind11_tests import chrono as m
 
 
@@ -73,7 +73,7 @@ def test_chrono_system_clock_roundtrip_date():
 
 
 SKIP_TZ_ENV_ON_WIN = pytest.mark.skipif(
-    "env.WIN", reason="TZ environment variable only supported on POSIX"
+    "env.WIN", reason="TZ environment variable only supported on POSIX",
 )
 
 
@@ -101,7 +101,7 @@ SKIP_TZ_ENV_ON_WIN = pytest.mark.skipif(
 )
 def test_chrono_system_clock_roundtrip_time(time1, tz, monkeypatch):
     if tz is not None:
-        monkeypatch.setenv("TZ", "/usr/share/zoneinfo/{}".format(tz))
+        monkeypatch.setenv("TZ", f"/usr/share/zoneinfo/{tz}")
 
     # Roundtrip the time
     datetime2 = m.test_chrono2(time1)

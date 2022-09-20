@@ -1,9 +1,10 @@
-# -*- coding: utf-8 -*-
-import pytest
+from __future__ import annotations
 
 import env  # noqa: F401
-from pybind11_tests import ConstructorStats, UserType
+import pytest
 from pybind11_tests import class_ as m
+from pybind11_tests import ConstructorStats
+from pybind11_tests import UserType
 
 
 def test_repr():
@@ -39,7 +40,7 @@ def test_type():
         m.check_type(0)
 
     assert "pybind11::detail::get_type_info: unable to find type info" in str(
-        execinfo.value
+        execinfo.value,
     )
     assert "Invalid" in str(execinfo.value)
 
@@ -380,7 +381,7 @@ def test_error_after_conversions():
     with pytest.raises(TypeError) as exc_info:
         m.test_error_after_conversions("hello")
     assert str(exc_info.value).startswith(
-        "Unable to convert function return value to a Python type!"
+        "Unable to convert function return value to a Python type!",
     )
 
 

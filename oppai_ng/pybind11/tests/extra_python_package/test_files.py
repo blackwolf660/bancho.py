@@ -1,4 +1,5 @@
-# -*- coding: utf-8 -*-
+from __future__ import annotations
+
 import contextlib
 import os
 import string
@@ -116,7 +117,7 @@ def test_build_sdist(monkeypatch, tmpdir):
             "--formats=tar",
             "--dist-dir",
             str(tmpdir),
-        ]
+        ],
     )
     if hasattr(out, "decode"):
         out = out.decode()
@@ -129,28 +130,28 @@ def test_build_sdist(monkeypatch, tmpdir):
         simpler = {n.split("/", 1)[-1] for n in tar.getnames()[1:]}
 
         with contextlib.closing(
-            tar.extractfile(tar.getmember(start + "setup.py"))
+            tar.extractfile(tar.getmember(start + "setup.py")),
         ) as f:
             setup_py = f.read()
 
         with contextlib.closing(
-            tar.extractfile(tar.getmember(start + "pyproject.toml"))
+            tar.extractfile(tar.getmember(start + "pyproject.toml")),
         ) as f:
             pyproject_toml = f.read()
 
         with contextlib.closing(
             tar.extractfile(
                 tar.getmember(
-                    start + "pybind11/share/cmake/pybind11/pybind11Config.cmake"
-                )
-            )
+                    start + "pybind11/share/cmake/pybind11/pybind11Config.cmake",
+                ),
+            ),
         ) as f:
             contents = f.read().decode("utf8")
         assert 'set(pybind11_INCLUDE_DIR "${PACKAGE_PREFIX_DIR}/include")' in contents
 
-    files = {"pybind11/{}".format(n) for n in all_files}
+    files = {f"pybind11/{n}" for n in all_files}
     files |= sdist_files
-    files |= {"pybind11{}".format(n) for n in local_sdist_files}
+    files |= {f"pybind11{n}" for n in local_sdist_files}
     files.add("pybind11.egg-info/entry_points.txt")
     files.add("pybind11.egg-info/requires.txt")
     assert simpler == files
@@ -181,7 +182,7 @@ def test_build_global_dist(monkeypatch, tmpdir):
             "--formats=tar",
             "--dist-dir",
             str(tmpdir),
-        ]
+        ],
     )
     if hasattr(out, "decode"):
         out = out.decode()
@@ -194,18 +195,18 @@ def test_build_global_dist(monkeypatch, tmpdir):
         simpler = {n.split("/", 1)[-1] for n in tar.getnames()[1:]}
 
         with contextlib.closing(
-            tar.extractfile(tar.getmember(start + "setup.py"))
+            tar.extractfile(tar.getmember(start + "setup.py")),
         ) as f:
             setup_py = f.read()
 
         with contextlib.closing(
-            tar.extractfile(tar.getmember(start + "pyproject.toml"))
+            tar.extractfile(tar.getmember(start + "pyproject.toml")),
         ) as f:
             pyproject_toml = f.read()
 
-    files = {"pybind11/{}".format(n) for n in all_files}
+    files = {f"pybind11/{n}" for n in all_files}
     files |= sdist_files
-    files |= {"pybind11_global{}".format(n) for n in local_sdist_files}
+    files |= {f"pybind11_global{n}" for n in local_sdist_files}
     assert simpler == files
 
     with open(os.path.join(MAIN_DIR, "tools", "setup_global.py.in"), "rb") as f:
@@ -225,12 +226,12 @@ def tests_build_wheel(monkeypatch, tmpdir):
     monkeypatch.chdir(MAIN_DIR)
 
     subprocess.check_output(
-        [sys.executable, "-m", "pip", "wheel", ".", "-w", str(tmpdir)]
+        [sys.executable, "-m", "pip", "wheel", ".", "-w", str(tmpdir)],
     )
 
     (wheel,) = tmpdir.visit("*.whl")
 
-    files = {"pybind11/{}".format(n) for n in all_files}
+    files = {f"pybind11/{n}" for n in all_files}
     files |= {
         "dist-info/LICENSE",
         "dist-info/METADATA",
@@ -255,13 +256,13 @@ def tests_build_global_wheel(monkeypatch, tmpdir):
     monkeypatch.setenv("PYBIND11_GLOBAL_SDIST", "1")
 
     subprocess.check_output(
-        [sys.executable, "-m", "pip", "wheel", ".", "-w", str(tmpdir)]
+        [sys.executable, "-m", "pip", "wheel", ".", "-w", str(tmpdir)],
     )
 
     (wheel,) = tmpdir.visit("*.whl")
 
-    files = {"data/data/{}".format(n) for n in src_files}
-    files |= {"data/headers/{}".format(n[8:]) for n in headers}
+    files = {f"data/data/{n}" for n in src_files}
+    files |= {f"data/headers/{n[8:]}" for n in headers}
     files |= {
         "dist-info/LICENSE",
         "dist-info/METADATA",
