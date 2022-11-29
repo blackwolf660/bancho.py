@@ -51,10 +51,12 @@ def test_partially_fixed():
     np.testing.assert_array_equal(m.partial_copy_four_rm_r(ref2[:, 1]), ref2[:, [1]])
     np.testing.assert_array_equal(m.partial_copy_four_rm_c(ref2[0, :]), ref2[[0], :])
     np.testing.assert_array_equal(
-        m.partial_copy_four_rm_r(ref2[:, (0, 2)]), ref2[:, (0, 2)],
+        m.partial_copy_four_rm_r(ref2[:, (0, 2)]),
+        ref2[:, (0, 2)],
     )
     np.testing.assert_array_equal(
-        m.partial_copy_four_rm_c(ref2[(3, 1, 2), :]), ref2[(3, 1, 2), :],
+        m.partial_copy_four_rm_c(ref2[(3, 1, 2), :]),
+        ref2[(3, 1, 2), :],
     )
 
     np.testing.assert_array_equal(m.partial_copy_four_cm_r(ref2), ref2)
@@ -62,10 +64,12 @@ def test_partially_fixed():
     np.testing.assert_array_equal(m.partial_copy_four_cm_r(ref2[:, 1]), ref2[:, [1]])
     np.testing.assert_array_equal(m.partial_copy_four_cm_c(ref2[0, :]), ref2[[0], :])
     np.testing.assert_array_equal(
-        m.partial_copy_four_cm_r(ref2[:, (0, 2)]), ref2[:, (0, 2)],
+        m.partial_copy_four_cm_r(ref2[:, (0, 2)]),
+        ref2[:, (0, 2)],
     )
     np.testing.assert_array_equal(
-        m.partial_copy_four_cm_c(ref2[(3, 1, 2), :]), ref2[(3, 1, 2), :],
+        m.partial_copy_four_cm_c(ref2[(3, 1, 2), :]),
+        ref2[(3, 1, 2), :],
     )
 
     # TypeError should be raise for a shape mismatch
@@ -355,10 +359,12 @@ def test_eigen_return_references():
     np.testing.assert_array_equal(a_block2, master[2:5, 2:4])
     np.testing.assert_array_equal(a_block3, master[6:10, 7:10])
     np.testing.assert_array_equal(
-        a_corn1, master[0 :: master.shape[0] - 1, 0 :: master.shape[1] - 1],
+        a_corn1,
+        master[0 :: master.shape[0] - 1, 0 :: master.shape[1] - 1],
     )
     np.testing.assert_array_equal(
-        a_corn2, master[0 :: master.shape[0] - 1, 0 :: master.shape[1] - 1],
+        a_corn2,
+        master[0 :: master.shape[0] - 1, 0 :: master.shape[1] - 1],
     )
 
     np.testing.assert_array_equal(a_copy1, c1want)
@@ -557,7 +563,8 @@ def test_both_ref_mutators():
     y = np.array(range(100), dtype="float64").reshape(10, 10)
     y2 = m.incr_matrix_any(y, 10)  # np -> eigen -> np
     y3 = m.incr_matrix_any(
-        y2[0::2, 0::2], -33,
+        y2[0::2, 0::2],
+        -33,
     )  # np -> eigen -> np slice -> np -> eigen -> np
     y4 = m.even_rows(y3)  # numpy -> eigen slice -> (... y3)
     y5 = m.even_cols(y4)  # numpy -> eigen slice -> (... y4)
@@ -581,11 +588,17 @@ def test_nocopy_wrapper():
     # callable with other types of matrix (via copying):
     int_matrix_colmajor = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]], order="F")
     dbl_matrix_colmajor = np.array(
-        int_matrix_colmajor, dtype="double", order="F", copy=True,
+        int_matrix_colmajor,
+        dtype="double",
+        order="F",
+        copy=True,
     )
     int_matrix_rowmajor = np.array(int_matrix_colmajor, order="C", copy=True)
     dbl_matrix_rowmajor = np.array(
-        int_matrix_rowmajor, dtype="double", order="C", copy=True,
+        int_matrix_rowmajor,
+        dtype="double",
+        order="C",
+        copy=True,
     )
 
     # All should be callable via get_elem:

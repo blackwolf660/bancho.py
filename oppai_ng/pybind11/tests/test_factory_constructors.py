@@ -496,11 +496,15 @@ def test_invalid_self():
                 m.TestFactory6.__init__(a, tag.alias, 1)
             elif bad == 3:
                 m.TestFactory6.__init__(
-                    NotPybindDerived.__new__(NotPybindDerived), tag.base, 1,
+                    NotPybindDerived.__new__(NotPybindDerived),
+                    tag.base,
+                    1,
                 )
             elif bad == 4:
                 m.TestFactory6.__init__(
-                    NotPybindDerived.__new__(NotPybindDerived), tag.alias, 1,
+                    NotPybindDerived.__new__(NotPybindDerived),
+                    tag.alias,
+                    1,
                 )
 
     for arg in (1, 2):

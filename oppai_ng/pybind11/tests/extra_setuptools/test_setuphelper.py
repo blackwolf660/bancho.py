@@ -106,7 +106,9 @@ def test_simple_setup_py(monkeypatch, tmpdir, parallel, std):
     )
 
     subprocess.check_call(
-        [sys.executable, "test.py"], stdout=sys.stdout, stderr=sys.stderr,
+        [sys.executable, "test.py"],
+        stdout=sys.stdout,
+        stderr=sys.stderr,
     )
 
 

@@ -120,7 +120,8 @@ def test_vector_buffer_numpy():
         np.zeros(
             3,
             dtype=np.dtype(
-                [("w", "bool"), ("x", "I"), ("y", "float64"), ("z", "bool")], align=True,
+                [("w", "bool"), ("x", "I"), ("y", "float64"), ("z", "bool")],
+                align=True,
             ),
         ),
     )

@@ -47,7 +47,8 @@ def packed_dtype_fmt():
     from sys import byteorder
 
     return "[('bool_', '?'), ('uint_', '{e}u4'), ('float_', '{e}f4'), ('ldbl_', '{e}f{}')]".format(
-        np.dtype("longdouble").itemsize, e="<" if byteorder == "little" else ">",
+        np.dtype("longdouble").itemsize,
+        e="<" if byteorder == "little" else ">",
     )
 
 
@@ -66,7 +67,9 @@ def partial_dtype_fmt():
     partial_size = partial_ld_off + ld.itemsize
     partial_end_padding = partial_size % np.dtype("uint64").alignment
     return dt_fmt().format(
-        ld.itemsize, partial_ld_off, partial_size + partial_end_padding,
+        ld.itemsize,
+        partial_ld_off,
+        partial_size + partial_end_padding,
     )
 
 
@@ -78,7 +81,9 @@ def partial_nested_fmt():
     partial_end_padding = partial_size % np.dtype("uint64").alignment
     partial_nested_size = partial_nested_off * 2 + partial_size + partial_end_padding
     return "{{'names':['a'], 'formats':[{}], 'offsets':[{}], 'itemsize':{}}}".format(
-        partial_dtype_fmt(), partial_nested_off, partial_nested_size,
+        partial_dtype_fmt(),
+        partial_nested_off,
+        partial_nested_size,
     )
 
 
@@ -90,7 +95,8 @@ def test_format_descriptors():
     with pytest.raises(RuntimeError) as excinfo:
         m.get_format_unbound()
     assert re.match(
-        "^NumPy type info missing for .*UnboundStruct.*$", str(excinfo.value),
+        "^NumPy type info missing for .*UnboundStruct.*$",
+        str(excinfo.value),
     )
 
     ld = np.dtype("longdouble")

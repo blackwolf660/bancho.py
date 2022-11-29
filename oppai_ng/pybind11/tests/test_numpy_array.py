@@ -20,7 +20,9 @@ def test_dtypes():
         if check.numpy.num != check.pybind11.num:
             print(
                 "NOTE: typenum mismatch for {}: {} != {}".format(
-                    check, check.numpy.num, check.pybind11.num,
+                    check,
+                    check.numpy.num,
+                    check.pybind11.num,
                 ),
             )
 
@@ -70,7 +72,8 @@ def test_array_attributes():
 
 
 @pytest.mark.parametrize(
-    "args, ret", [([], 0), ([0], 0), ([1], 3), ([0, 1], 1), ([1, 2], 5)],
+    "args, ret",
+    [([], 0), ([0], 0), ([1], 3), ([0, 1], 1), ([1, 2], 5)],
 )
 def test_index_offset(arr, args, ret):
     assert m.index_at(arr, *args) == ret
@@ -576,7 +579,8 @@ def test_argument_conversions(forcecast, contiguity, noconvert):
                     function(array)
                 else:
                     with pytest.raises(
-                        TypeError, match="incompatible function arguments",
+                        TypeError,
+                        match="incompatible function arguments",
                     ):
                         function(array)
 

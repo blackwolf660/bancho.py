@@ -190,13 +190,17 @@ def test_callback_num_times():
             print()
         print(
             "callback_num_times: {:d} million / {:.3f} seconds = {:.3f} million / second".format(
-                num_millions, td, rate,
+                num_millions,
+                td,
+                rate,
             ),
         )
     if len(rates) > 1:
         print("Min    Mean   Max")
         print(
             "{:6.3f} {:6.3f} {:6.3f}".format(
-                min(rates), sum(rates) / len(rates), max(rates),
+                min(rates),
+                sum(rates) / len(rates),
+                max(rates),
             ),
         )
