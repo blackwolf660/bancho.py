@@ -428,7 +428,12 @@ class ParallelCompile:
 
             # These lines are directly from distutils.ccompiler.CCompiler
             macros, objects, extra_postargs, pp_opts, build = compiler._setup_compile(
-                output_dir, macros, include_dirs, sources, depends, extra_postargs,
+                output_dir,
+                macros,
+                include_dirs,
+                sources,
+                depends,
+                extra_postargs,
             )
             cc_args = compiler._get_cc_args(pp_opts, debug, extra_preargs)
 

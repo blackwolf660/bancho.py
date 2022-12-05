@@ -212,7 +212,8 @@ async def _link(ctx: Context) -> str:
     randcode = random.randrange(10000, 99999)
 
     if not await app.state.services.database.fetch_all(
-        "SELECT osu_id FROM discord WHERE osu_id = %s", [ctx.player.id],
+        "SELECT osu_id FROM discord WHERE osu_id = %s",
+        [ctx.player.id],
     ):
         await glob.db.execute(
             "INSERT INTO discord " "(osu_id, discord_tag, code) " "VALUES (%s, %s, %s)",
@@ -673,7 +674,9 @@ async def request(ctx: Context) -> Optional[str]:
     embed = DiscordEmbed(
         title=f"New request from {ctx.player.name}!",
         description="{} request {} for rank/love.\nhttps://osu.ppy.sh/b/{}".format(
-            ctx.player.name, bmap, bmap.id,
+            ctx.player.name,
+            bmap,
+            bmap.id,
         ),
         color="2cc77c",
     )
@@ -833,7 +836,9 @@ async def _map(ctx: Context) -> Optional[str]:
         embed = DiscordEmbed(
             title=f"New {new_status}!",
             description="{} updated to {} {}.".format(
-                ctx.player.name, new_status, bmap,
+                ctx.player.name,
+                new_status,
+                bmap,
             ),
             color="2cc77c",
         )

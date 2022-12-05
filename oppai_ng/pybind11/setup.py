@@ -16,7 +16,8 @@ import setuptools.command.sdist
 
 DIR = os.path.abspath(os.path.dirname(__file__))
 VERSION_REGEX = re.compile(
-    r"^\s*#\s*define\s+PYBIND11_VERSION_([A-Z]+)\s+(.*)$", re.MULTILINE,
+    r"^\s*#\s*define\s+PYBIND11_VERSION_([A-Z]+)\s+(.*)$",
+    re.MULTILINE,
 )
 
 
@@ -45,7 +46,11 @@ def build_expected_version_hex(matches):
         msg = f'Invalid PYBIND11_VERSION_PATCH: "{patch_level_serial}"'
         raise RuntimeError(msg)
     return "0x{:02x}{:02x}{:02x}{}{:x}".format(
-        major, minor, patch, level[:1].upper(), serial,
+        major,
+        minor,
+        patch,
+        level[:1].upper(),
+        serial,
     )
 
 
@@ -75,7 +80,8 @@ with open("include/pybind11/detail/common.h", encoding="utf8") as f:
 cpp_version = "{MAJOR}.{MINOR}.{PATCH}".format(**matches)
 if version != cpp_version:
     msg = "Python version {} does not match C++ version {}!".format(
-        version, cpp_version,
+        version,
+        cpp_version,
     )
     raise RuntimeError(msg)
 

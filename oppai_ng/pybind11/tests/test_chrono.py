@@ -73,7 +73,8 @@ def test_chrono_system_clock_roundtrip_date():
 
 
 SKIP_TZ_ENV_ON_WIN = pytest.mark.skipif(
-    "env.WIN", reason="TZ environment variable only supported on POSIX",
+    "env.WIN",
+    reason="TZ environment variable only supported on POSIX",
 )
 
 

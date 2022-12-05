@@ -139,7 +139,8 @@ def test_optional():
 
 
 @pytest.mark.skipif(
-    not hasattr(m, "has_exp_optional"), reason="no <experimental/optional>",
+    not hasattr(m, "has_exp_optional"),
+    reason="no <experimental/optional>",
 )
 def test_exp_optional():
     assert m.double_or_zero_exp(None) == 0

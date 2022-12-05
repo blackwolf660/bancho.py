@@ -14,6 +14,7 @@ import textwrap
 import env
 import pybind11_tests  # noqa: F401
 import pytest
+
 # Early diagnostic for failed imports
 
 _unicode_marker = re.compile(r"u(\'[^\']*\')")

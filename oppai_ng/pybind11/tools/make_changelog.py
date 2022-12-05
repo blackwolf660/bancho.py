@@ -26,7 +26,9 @@ print()
 api = ghapi.all.GhApi(owner="pybind", repo="pybind11")
 
 issues_pages = ghapi.page.paged(
-    api.issues.list_for_repo, labels="needs changelog", state="closed",
+    api.issues.list_for_repo,
+    labels="needs changelog",
+    state="closed",
 )
 issues = (issue for page in issues_pages for issue in page)
 missing = []

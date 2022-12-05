@@ -33,7 +33,7 @@ def tests(session: nox.Session) -> None:
         "-DPYBIND11_WERROR=ON",
         "-DDOWNLOAD_CATCH=ON",
         "-DDOWNLOAD_EIGEN=ON",
-        *session.posargs
+        *session.posargs,
     )
     session.run("cmake", "--build", tmpdir)
     session.run("cmake", "--build", tmpdir, "--config=Release", "--target", "check")

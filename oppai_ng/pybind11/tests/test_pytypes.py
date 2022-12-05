@@ -271,7 +271,7 @@ def test_constructors():
     if env.PY2:
         # Note that bytes.__name__ == 'str' in Python 2.
         # pybind11::str is unicode even under Python 2.
-        expected["bytes"] = b''
+        expected["bytes"] = b""
         expected["str"] = unicode()  # noqa: F821
     assert m.default_constructors() == expected
 
@@ -322,7 +322,8 @@ def test_non_converting_constructors():
             with pytest.raises(TypeError) as excinfo:
                 m.nonconverting_constructor(t, v, move)
             expected_error = "Object of type '{}' is not an instance of '{}'".format(
-                type(v).__name__, t,
+                type(v).__name__,
+                t,
             )
             assert str(excinfo.value) == expected_error
 

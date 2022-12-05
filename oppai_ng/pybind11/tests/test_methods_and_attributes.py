@@ -498,14 +498,8 @@ def test_overload_ordering():
     uni_name = str.__name__
 
     assert "1. overload_order(arg0: int) -> int" in m.overload_order.__doc__
-    assert (
-        f"2. overload_order(arg0: {uni_name}) -> int"
-        in m.overload_order.__doc__
-    )
-    assert (
-        f"3. overload_order(arg0: {uni_name}) -> int"
-        in m.overload_order.__doc__
-    )
+    assert f"2. overload_order(arg0: {uni_name}) -> int" in m.overload_order.__doc__
+    assert f"3. overload_order(arg0: {uni_name}) -> int" in m.overload_order.__doc__
     assert "4. overload_order(arg0: int) -> int" in m.overload_order.__doc__
 
     with pytest.raises(TypeError) as err:
