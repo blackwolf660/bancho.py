@@ -89,7 +89,7 @@ def main(argv: Sequence[str]) -> int:
 ⠀⠀⠀⠀⢸⣿⠀⠀⠀⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⢸⣿⣀⣀⣀⣼⡿⢿⣿⣿⣿⣿⣿⡿⣿⣿⡿
 """
-    
+
     # the server supports both inet and unix sockets.
 
     if (
